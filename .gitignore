@@ -1,0 +1,40 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest
+.pytest_cache/
+
+# SQLite
+*.sqlite3
+test.db
+
+# VS Code / IDEs
+.vscode/
+.idea/
+*.swp
+
+# Node / Next.js (already covered in frontend/.gitignore but good to have)
+node_modules/
+.next/
+out/
+build/
+.pnp
+.pnp.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
