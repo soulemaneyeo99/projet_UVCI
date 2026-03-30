@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Allow images from the Render backend
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.onrender.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

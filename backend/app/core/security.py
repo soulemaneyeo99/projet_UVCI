@@ -3,8 +3,9 @@ from datetime import datetime, timedelta
 from typing import Any, Union
 from jose import jwt
 
-# Configuration (to be moved to .env later)
-SECRET_KEY = "SUPER_SECRET_KEY_FOR_UVCI_GESTON_HEURES"
+import os
+
+SECRET_KEY = os.getenv("SECRET_KEY", "SUPER_SECRET_KEY_FOR_UVCI_GESTON_HEURES")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 # 24 hours
 

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import MainLayout from '@/components/layout/MainLayout';
+
 import { Users, Clock, UserCheck, AlertTriangle, TrendingUp, Eye } from 'lucide-react';
 import api from '@/lib/api';
 import Link from 'next/link';
@@ -44,12 +44,12 @@ export default function DashboardPage() {
   }, []);
 
   if (loading) return (
-    <MainLayout>
+    <>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}>
         <div style={{ width: '32px', height: '32px', borderRadius: '50%', border: '3px solid #E2E8F0', borderTopColor: '#1F4E79', animation: 'spin 0.8s linear infinite' }} />
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </div>
-    </MainLayout>
+    </>
   );
 
   const kpis = [
@@ -63,7 +63,7 @@ export default function DashboardPage() {
   const monthlyData = (stats?.monthly_data || []).map(d => ({ label: d.mois, value: d.volume }));
 
   return (
-    <MainLayout>
+    <>
       <div className="page-header">
         <h1 className="page-title">Tableau de bord</h1>
         <p className="page-subtitle">Vue d'ensemble de l'activité pédagogique — {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</p>
@@ -195,6 +195,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    </MainLayout>
+    </>
   );
 }

@@ -17,6 +17,7 @@ __pycache__/
 
 # SQLite
 *.sqlite3
+*.db
 test.db
 
 # VS Code / IDEs

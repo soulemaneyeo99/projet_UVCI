@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import MainLayout from '@/components/layout/MainLayout';
+
 import { Plus, Search, Edit2, Trash2, X, Loader2 } from 'lucide-react';
 import api from '@/lib/api';
 
@@ -134,7 +134,7 @@ export default function TeachersPage() {
   const totalPages = Math.ceil(teachers.length / PER_PAGE);
 
   return (
-    <MainLayout>
+    <>
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h1 className="page-title">Enseignants</h1>
@@ -240,6 +240,6 @@ export default function TeachersPage() {
           onSaved={load}
         />
       )}
-    </MainLayout>
+    </>
   );
 }
