@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { CheckCircle, Clock, Check } from 'lucide-react';
+import { CheckCircle, Clock, Check, X, AlertCircle } from 'lucide-react';
 import api from '@/lib/api';
 import Link from 'next/link';
 
@@ -31,6 +31,14 @@ export default function SecretaryDashboardPage() {
     } finally { setValidating(null); }
   };
 
+  const reject = async (id: number) => {
+    setValidating(id); // reuse var to lock buttons
+    try {
+      await api.put(`/activities/${id}/validate`, { validation_status: 'rejetee' });
+      setActivities(prev => prev.map(a => a.id === id ? { ...a, validation_status: 'rejetee' } : a));
+    } finally { setValidating(null); }
+  };
+
   const thisMonth = activities.filter(a => {
     if (!a.created_at) return false;
     const d = new Date(a.created_at);
@@ -39,6 +47,7 @@ export default function SecretaryDashboardPage() {
   });
 
   const pending = activities.filter(a => a.validation_status === 'en_attente');
+  const rejected = activities.filter(a => a.validation_status === 'rejetee');
 
   return (
     <>
@@ -48,26 +57,37 @@ export default function SecretaryDashboardPage() {
       </div>
 
       {/* KPI */}
-      <div className="grid-2" style={{ marginBottom: '1.5rem', maxWidth: '640px' }}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ marginBottom: '1.5rem', maxWidth: '900px' }}>
         <div className="card">
-          <div className="stat-card">
-            <div className="stat-icon" style={{ background: '#EBF2F7' }}>
+          <div className="stat-card flex items-center gap-4">
+            <div className="stat-icon p-3 rounded-full" style={{ background: '#EBF2F7' }}>
               <CheckCircle size={22} color="#1F4E79" />
             </div>
             <div>
-              <div className="stat-value">{thisMonth.length}</div>
-              <div className="stat-label">Activités ce mois</div>
+              <div className="stat-value text-xl font-bold">{thisMonth.length}</div>
+              <div className="stat-label text-sm text-gray-500">Activités ce mois</div>
             </div>
           </div>
         </div>
         <div className="card">
-          <div className="stat-card">
-            <div className="stat-icon" style={{ background: '#FEF3C7' }}>
+          <div className="stat-card flex items-center gap-4">
+            <div className="stat-icon p-3 rounded-full" style={{ background: '#FEF3C7' }}>
               <Clock size={22} color="#D97706" />
             </div>
             <div>
-              <div className="stat-value">{pending.length}</div>
-              <div className="stat-label">En attente de validation</div>
+              <div className="stat-value text-xl font-bold">{pending.length}</div>
+              <div className="stat-label text-sm text-gray-500">En attente de validation</div>
+            </div>
+          </div>
+        </div>
+        <div className="card">
+          <div className="stat-card flex items-center gap-4">
+            <div className="stat-icon p-3 rounded-full" style={{ background: '#FEE2E2' }}>
+              <AlertCircle size={22} color="#DC2626" />
+            </div>
+            <div>
+              <div className="stat-value text-xl font-bold">{rejected.length}</div>
+              <div className="stat-label text-sm text-gray-500">Activités rejetées</div>
             </div>
           </div>
         </div>
@@ -122,21 +142,32 @@ export default function SecretaryDashboardPage() {
                   </td>
                   <td style={{ fontWeight: 700, color: '#1F4E79' }}>{act.volume_horaire_calcule}h</td>
                   <td>
-                    <span className={`badge ${act.validation_status === 'valide' ? 'badge-green' : 'badge-orange'}`} style={{ fontSize: '0.7rem' }}>
-                      {act.validation_status === 'valide' ? 'Validé' : 'En attente'}
+                    <span className={`badge ${act.validation_status === 'valide' ? 'badge-green' : act.validation_status === 'rejetee' ? 'badge-red' : 'badge-orange'}`} style={{ fontSize: '0.7rem' }}>
+                      {act.validation_status === 'valide' ? 'Validé' : act.validation_status === 'rejetee' ? 'Rejeté' : 'En attente'}
                     </span>
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     {act.validation_status === 'en_attente' ? (
-                      <button
-                        onClick={() => validate(act.id)}
-                        disabled={validating === act.id}
-                        className="btn btn-sm"
-                        style={{ background: '#DCFCE7', color: '#16A34A', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
-                      >
-                        <Check size={13} />
-                        {validating === act.id ? '…' : 'Valider'}
-                      </button>
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          onClick={() => validate(act.id)}
+                          disabled={validating === act.id}
+                          className="btn btn-sm flex items-center gap-1 hover:opacity-80 transition"
+                          style={{ background: '#DCFCE7', color: '#16A34A', border: 'none', cursor: 'pointer' }}
+                        >
+                          <Check size={13} />
+                          {validating === act.id ? '…' : 'Valider'}
+                        </button>
+                        <button
+                          onClick={() => reject(act.id)}
+                          disabled={validating === act.id}
+                          className="btn btn-sm flex items-center gap-1 hover:opacity-80 transition"
+                          style={{ background: '#FEE2E2', color: '#DC2626', border: 'none', cursor: 'pointer' }}
+                        >
+                          <X size={13} />
+                          {validating === act.id ? '…' : 'Rejeter'}
+                        </button>
+                      </div>
                     ) : (
                       <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>—</span>
                     )}

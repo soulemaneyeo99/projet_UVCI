@@ -47,6 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const userData: AuthUser = { email: userEmail, role, user_id, teacher_id };
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
+    
+    document.cookie = `token=Bearer ${access_token}; path=/; max-age=28800`;
+    document.cookie = `role=${role}; path=/; max-age=28800`;
 
     if (role === 'admin') router.push('/dashboard');
     else if (role === 'secretary') router.push('/secretary/dashboard');
@@ -56,6 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    document.cookie = 'role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     setUser(null);
     router.push('/');
   };

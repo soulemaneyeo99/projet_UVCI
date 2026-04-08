@@ -1,8 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-import { Plus, Search, Edit2, Trash2, X, Loader2 } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, X, Loader2, PowerOff } from 'lucide-react';
 import api from '@/lib/api';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface Teacher {
   id: number; nom: string; prenom: string; grade: string;
@@ -125,9 +126,25 @@ export default function TeachersPage() {
   useEffect(() => { load(); }, [search, grade, statut]);
 
   const del = async (id: number) => {
-    if (!confirm('Supprimer cet enseignant ?')) return;
-    await api.delete(`/teachers/${id}`);
-    load();
+    if (!confirm('Voulez-vous vraiment supprimer cet enseignant ? (Action irréversible)')) return;
+    try {
+      await api.delete(`/teachers/${id}`);
+      toast.success('Enseignant supprimé avec succès');
+      load();
+    } catch {
+      toast.error('Erreur lors de la suppression');
+    }
+  };
+
+  const deactivate = async (id: number) => {
+    if (!confirm('Voulez-vous désactiver l\'accès de cet enseignant ?')) return;
+    try {
+      await api.patch(`/teachers/${id}/desactiver`);
+      toast.success('Enseignant et compte associé désactivés');
+      load();
+    } catch {
+      toast.error('Erreur lors de la désactivation');
+    }
   };
 
   const paged = teachers.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -135,6 +152,7 @@ export default function TeachersPage() {
 
   return (
     <>
+      <Toaster position="top-right" />
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h1 className="page-title">Enseignants</h1>
@@ -206,6 +224,9 @@ export default function TeachersPage() {
                     <div style={{ display: 'flex', gap: '0.375rem', justifyContent: 'center' }}>
                       <button onClick={() => setModal(t)} className="btn btn-ghost btn-sm" title="Modifier">
                         <Edit2 size={14} />
+                      </button>
+                      <button onClick={() => deactivate(t.id)} className="btn btn-sm" style={{ background: '#FFF7ED', color: '#EA580C', border: 'none', cursor: 'pointer', borderRadius: '6px', padding: '0.35rem 0.5rem' }} title="Désactiver le compte">
+                        <PowerOff size={14} />
                       </button>
                       <button onClick={() => del(t.id)} className="btn btn-sm" style={{ background: '#FEF2F2', color: '#DC2626', border: 'none', cursor: 'pointer', borderRadius: '6px', padding: '0.35rem 0.5rem' }} title="Supprimer">
                         <Trash2 size={14} />

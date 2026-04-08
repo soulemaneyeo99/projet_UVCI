@@ -5,7 +5,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from app.api.endpoints import auth, teachers, courses, activities, exports, dashboard, academic_years
+from app.api.endpoints import auth, teachers, courses, activities, exports, dashboard, academic_years, users, config
 from app.db.database import engine, SessionLocal, get_db
 from app.models import models
 
@@ -25,37 +25,44 @@ def run_seed():
             def upsert_user(email, password, role):
                 u = db.query(User).filter(User.email == email).first()
                 if not u:
-                    u = User(email=email, hashed_password=get_password_hash(password), role=role)
+                    u = User(email=email, hashed_password=get_password_hash(password), role=role, est_actif=True)
                     db.add(u)
                     db.flush()
                 return u
 
-            upsert_user("admin@uvci.ci", "admin123", "admin")
-            upsert_user("secretaire@uvci.ci", "secretaire123", "secretary")
+            # 1. Exactement 3 users principaux (Admin, Secretary, Teacher base)
+            admin_u = upsert_user("admin@uvci.ci", "admin123", "admin")
+            sec_u = upsert_user("secretaire@uvci.ci", "secretaire123", "secretary")
+            # The first teacher will use this user
 
-            ay = AcademicYear(libelle="2024-2025", date_debut="2024-09-01", date_fin="2025-07-31", status=True)
-            db.add(ay)
+            # 2. Exactement 3 Années Académiques
+            ay1 = AcademicYear(libelle="2023-2024", date_debut="2023-09-01", date_fin="2024-07-31", status=False)
+            ay2 = AcademicYear(libelle="2024-2025", date_debut="2024-09-01", date_fin="2025-07-31", status=False)
+            ay3 = AcademicYear(libelle="2025-2026", date_debut="2025-09-01", date_fin="2026-07-31", status=True)
+            db.add_all([ay1, ay2, ay3])
             db.flush()
 
+            # 3. Exactement 5 Enseignants
             teachers_data = [
                 ("Kouame","Jean-Pierre","Professeur","Permanent","Informatique",5000.0,"jkouame@uvci.ci"),
-                ("Bamba","Aminata","Maitre de Conferences","Permanent","Mathematiques",4500.0,"abamba@uvci.ci"),
-                ("Ouattara","Ibrahim","Maitre-Assistant","Permanent","Sciences Economiques",3500.0,"iouattara@uvci.ci"),
+                ("Bamba","Aminata","Maître de Conférences","Permanent","Mathematiques",4500.0,"abamba@uvci.ci"),
+                ("Ouattara","Ibrahim","Maître-Assistant","Permanent","Sciences Economiques",3500.0,"iouattara@uvci.ci"),
                 ("Koffi","Marie","Assistant","Vacataire","Informatique",2500.0,"mkoffi@uvci.ci"),
-                ("Diabate","Seydou","Maitre-Assistant","Permanent","Droit",3500.0,"sdiabaté@uvci.ci"),
-                ("Traore","Fatoumata","Professeur","Permanent","Langues",5000.0,"ftraore@uvci.ci"),
-                ("Coulibaly","Moussa","Assistant","Vacataire","Mathematiques",2500.0,"mcoulibaly@uvci.ci"),
-                ("Yao","Evelyne","Maitre de Conferences","Permanent","Informatique",4500.0,"eyao@uvci.ci"),
+                ("Diabate","Seydou","Maître-Assistant","Permanent","Droit",3500.0,"sdiabate@uvci.ci"),
             ]
             created_teachers = []
-            for nom, prenom, grade, statut, dept, taux, email in teachers_data:
-                u = upsert_user(email, "teacher123", "teacher")
+            for idx, (nom, prenom, grade, statut, dept, taux, email) in enumerate(teachers_data):
+                if idx == 0:
+                    u = upsert_user(email, "teacher123", "teacher")
+                else:
+                    u = upsert_user(email, "teacher123", "teacher")
                 t = Teacher(nom=nom, prenom=prenom, grade=grade, statut=statut,
                             departement=dept, taux_horaire=taux, email=email, user_id=u.id)
                 db.add(t)
                 db.flush()
                 created_teachers.append(t)
 
+            # 4. Exactement 10 Cours
             courses_data = [
                 ("Programmation Python","Informatique","L1","S1"),
                 ("Algorithmes et Structures de Donnees","Informatique","L2","S1"),
@@ -75,26 +82,43 @@ def run_seed():
                 db.flush()
                 created_courses.append(c)
 
+            # 5. Exactement 20 Ressources et 30 Activités
             act_configs = [
-                (0,0,"creation",2,5),(0,1,"creation",3,3),(1,5,"creation",1,8),
-                (2,8,"mise_a_jour",2,4),(3,3,"creation",1,6),(4,4,"creation",3,2),
-                (5,6,"mise_a_jour",1,10),(6,7,"creation",2,7),(7,0,"mise_a_jour",3,3),
-                (1,1,"creation",2,5),(2,2,"creation",1,8),(3,9,"mise_a_jour",2,4),
-            ]
-            statuses = ["en_attente","valide","valide"]
-            for teacher_idx, course_idx, type_act, niveau_comp, nb_seq in act_configs:
-                if teacher_idx >= len(created_teachers) or course_idx >= len(created_courses):
-                    continue
-                t = created_teachers[teacher_idx]
-                c = created_courses[course_idx]
-                vol = calculate_volume_horaire(type_act, niveau_comp, nb_seq)
-                r = Resource(type=type_act, niveau_complexite=niveau_comp, course_id=c.id, teacher_id=t.id)
+                # teacher_idx, course_idx, type, niveau, nb_seq
+                (0,0,"creation",2,5), (0,1,"creation",3,3), (1,5,"creation",1,8),
+                (2,8,"mise_a_jour",2,4), (3,3,"creation",1,6), (4,4,"creation",3,2),
+                (0,6,"mise_a_jour",1,10), (1,7,"creation",2,7), (2,0,"mise_a_jour",3,3),
+                (1,1,"creation",2,5), (2,2,"creation",1,8), (3,9,"mise_a_jour",2,4),
+                (0,2,"creation",1,4), (1,3,"mise_a_jour",2,2), (2,4,"creation",3,3),
+                (3,5,"mise_a_jour",1,5), (4,6,"creation",2,6), (0,7,"mise_a_jour",3,2),
+                (1,8,"creation",1,3), (2,9,"mise_a_jour",2,5)
+            ]  # 20 resources
+            
+            created_resources = []
+            for t_idx, c_idx, t_act, n_comp, n_seq in act_configs:
+                t = created_teachers[t_idx % 5]
+                c = created_courses[c_idx % 10]
+                r = Resource(type=t_act, niveau_complexite=n_comp, course_id=c.id, teacher_id=t.id)
                 db.add(r)
                 db.flush()
-                a = Activity(type=type_act, resource_id=r.id, teacher_id=t.id, nb_sequences=nb_seq,
-                             volume_horaire_calcule=vol, academic_year_id=ay.id, annee_academique=ay.libelle,
-                             validation_status=random.choice(statuses))
-                db.add(a)
+                created_resources.append((r, t, n_seq))
+
+            # Let's create 30 activities from these 20 resources (some resources have multiple activities)
+            statuses = ["en_attente","valide","valide","rejetee","valide"]
+            count_act = 0
+            while count_act < 30:
+                for r, t, n_seq in created_resources:
+                    if count_act >= 30:
+                        break
+                    vol = calculate_volume_horaire(r.type, r.niveau_complexite, n_seq)
+                    a = Activity(type=r.type, resource_id=r.id, teacher_id=t.id, nb_sequences=n_seq,
+                                 volume_horaire_calcule=vol, academic_year_id=ay3.id, annee_academique=ay3.libelle,
+                                 validation_status=statuses[count_act % len(statuses)])
+                    if a.validation_status == "valide":
+                        a.validated_by = admin_u.id
+                    db.add(a)
+                    count_act += 1
+
             db.commit()
             print("Base de donnees initialisee avec les donnees de demonstration")
     except Exception as e:
@@ -128,6 +152,8 @@ app.add_middleware(
 
 # Routers
 app.include_router(auth.router,           prefix="/auth",           tags=["Authentication"])
+app.include_router(users.router,          prefix="/users",          tags=["Users"])
+app.include_router(config.router,         prefix="/config",         tags=["Config"])
 app.include_router(teachers.router,       prefix="/teachers",       tags=["Teachers"])
 app.include_router(courses.router,        prefix="/courses",        tags=["Courses"])
 app.include_router(activities.router,     prefix="/activities",     tags=["Activities"])

@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from app.db.database import get_db
-from app.models.models import Teacher, Activity
+from app.models.models import Teacher, Activity, User
 from app.schemas.schemas import TeacherCreate, TeacherUpdate, Teacher as TeacherSchema
+from app.core.security import require_admin, require_admin_or_secretary, require_authenticated
 
 router = APIRouter()
 
@@ -36,6 +37,7 @@ def list_teachers(
     statut: Optional[str] = None,
     departement: Optional[str] = None,
     db: Session = Depends(get_db),
+    _=Depends(require_authenticated),
 ):
     query = db.query(Teacher)
     if search:
@@ -56,7 +58,11 @@ def list_teachers(
 
 
 @router.post("/", response_model=TeacherSchema)
-def create_teacher(teacher: TeacherCreate, db: Session = Depends(get_db)):
+def create_teacher(
+    teacher: TeacherCreate,
+    db: Session = Depends(get_db),
+    _=Depends(require_admin_or_secretary),
+):
     existing = db.query(Teacher).filter(Teacher.email == teacher.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="Un enseignant avec cet email existe déjà")
@@ -69,7 +75,11 @@ def create_teacher(teacher: TeacherCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/{teacher_id}", response_model=TeacherSchema)
-def get_teacher(teacher_id: int, db: Session = Depends(get_db)):
+def get_teacher(
+    teacher_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_authenticated),
+):
     teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
     if not teacher:
         raise HTTPException(status_code=404, detail="Enseignant non trouvé")
@@ -78,7 +88,10 @@ def get_teacher(teacher_id: int, db: Session = Depends(get_db)):
 
 @router.put("/{teacher_id}", response_model=TeacherSchema)
 def update_teacher(
-    teacher_id: int, teacher_data: TeacherUpdate, db: Session = Depends(get_db)
+    teacher_id: int,
+    teacher_data: TeacherUpdate,
+    db: Session = Depends(get_db),
+    _=Depends(require_admin_or_secretary),
 ):
     teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
     if not teacher:
@@ -92,8 +105,32 @@ def update_teacher(
     return _teacher_with_volume(teacher, db)
 
 
+@router.patch("/{teacher_id}/desactiver")
+def desactiver_teacher(
+    teacher_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_admin),
+):
+    """Désactive un enseignant (et son compte utilisateur associé si présent). Admin seulement."""
+    teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
+    if not teacher:
+        raise HTTPException(status_code=404, detail="Enseignant non trouvé")
+    
+    if teacher.user_id:
+        user = db.query(User).filter(User.id == teacher.user_id).first()
+        if user:
+            user.est_actif = False
+
+    db.commit()
+    return {"message": "Enseignant désactivé avec succès"}
+
+
 @router.delete("/{teacher_id}")
-def delete_teacher(teacher_id: int, db: Session = Depends(get_db)):
+def delete_teacher(
+    teacher_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_admin),
+):
     teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
     if not teacher:
         raise HTTPException(status_code=404, detail="Enseignant non trouvé")

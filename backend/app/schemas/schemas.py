@@ -30,6 +30,7 @@ class ActivityType(str, Enum):
 class ValidationStatus(str, Enum):
     en_attente = "en_attente"
     valide = "valide"
+    rejetee = "rejetee"
 
 
 # ---------------------------------------------------------------------------
@@ -42,6 +43,14 @@ class UserCreate(BaseModel):
     role: UserRole = UserRole.teacher
     nom: Optional[str] = None
     prenom: Optional[str] = None
+
+
+class UserManage(BaseModel):
+    """Schema used by Admin to create/update a user account."""
+    email: str
+    password: Optional[str] = None
+    role: UserRole = UserRole.teacher
+    est_actif: bool = True
 
 
 class UserLogin(BaseModel):
@@ -58,6 +67,8 @@ class UserOut(BaseModel):
     id: int
     email: str
     role: str
+    est_actif: bool
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -75,6 +86,7 @@ class Token(BaseModel):
     role: str
     user_id: int
     email: str
+    teacher_id: Optional[int] = None
 
 
 # ---------------------------------------------------------------------------
@@ -171,7 +183,7 @@ class AcademicYearBase(BaseModel):
     libelle: str
     date_debut: Optional[str] = None
     date_fin: Optional[str] = None
-    status: bool = True
+    status: bool = False
 
 
 class AcademicYearCreate(AcademicYearBase):
@@ -251,4 +263,40 @@ class Activity(BaseModel):
 
 
 class ActivityValidate(BaseModel):
-    validation_status: str  # "valide" or "en_attente"
+    validation_status: str  # "valide", "rejetee", "en_attente"
+
+
+# ---------------------------------------------------------------------------
+# Coefficient & Quota schemas
+# ---------------------------------------------------------------------------
+
+class CoefficientConfigOut(BaseModel):
+    id: int
+    niveau_complexite: int
+    type_activite: str
+    coefficient: float
+
+    class Config:
+        from_attributes = True
+
+
+class CoefficientConfigUpdate(BaseModel):
+    niveau_complexite: int
+    type_activite: str
+    coefficient: float
+
+
+class QuotaStatutaireOut(BaseModel):
+    id: int
+    grade: str
+    statut: str
+    quota_heures: float
+
+    class Config:
+        from_attributes = True
+
+
+class QuotaStatutaireUpdate(BaseModel):
+    grade: str
+    statut: str
+    quota_heures: float

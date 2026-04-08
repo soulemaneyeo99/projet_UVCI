@@ -7,6 +7,7 @@ from app.db.database import get_db
 from app.models.models import Activity, Teacher, Course, Resource, AcademicYear
 from app.schemas.schemas import ActivityCreate, ActivityOut, ActivityValidate
 from app.services.calculator import calculate_volume_horaire
+from app.core.security import require_admin_or_secretary, require_authenticated
 
 router = APIRouter()
 
@@ -45,7 +46,11 @@ def _build_activity_out(act: Activity, db: Session) -> ActivityOut:
 
 
 @router.post("/", response_model=ActivityOut)
-def create_activity(activity: ActivityCreate, db: Session = Depends(get_db)):
+def create_activity(
+    activity: ActivityCreate,
+    db: Session = Depends(get_db),
+    _=Depends(require_admin_or_secretary),
+):
     teacher = db.query(Teacher).filter(Teacher.id == activity.teacher_id).first()
     if not teacher:
         raise HTTPException(status_code=404, detail="Enseignant non trouvé")
@@ -114,6 +119,7 @@ def list_activities(
     teacher_id: Optional[int] = None,
     validation_status: Optional[str] = None,
     db: Session = Depends(get_db),
+    _=Depends(require_authenticated),
 ):
     query = db.query(Activity)
     if teacher_id:
@@ -126,7 +132,11 @@ def list_activities(
 
 
 @router.get("/teacher/{teacher_id}", response_model=List[ActivityOut])
-def get_teacher_activities(teacher_id: int, db: Session = Depends(get_db)):
+def get_teacher_activities(
+    teacher_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_authenticated),
+):
     activities = (
         db.query(Activity)
         .filter(Activity.teacher_id == teacher_id)
@@ -137,7 +147,11 @@ def get_teacher_activities(teacher_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/volume/{teacher_id}")
-def get_teacher_volume(teacher_id: int, db: Session = Depends(get_db)):
+def get_teacher_volume(
+    teacher_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_authenticated),
+):
     activities = db.query(Activity).filter(Activity.teacher_id == teacher_id).all()
     total = sum(a.volume_horaire_calcule for a in activities)
     validated = sum(
@@ -153,7 +167,10 @@ def get_teacher_volume(teacher_id: int, db: Session = Depends(get_db)):
 
 @router.put("/{activity_id}/validate")
 def validate_activity(
-    activity_id: int, data: ActivityValidate, db: Session = Depends(get_db)
+    activity_id: int,
+    data: ActivityValidate,
+    db: Session = Depends(get_db),
+    _=Depends(require_admin_or_secretary),
 ):
     activity = db.query(Activity).filter(Activity.id == activity_id).first()
     if not activity:
@@ -162,5 +179,8 @@ def validate_activity(
     activity.validation_status = data.validation_status
     if data.validation_status == "valide":
         activity.validated_at = datetime.utcnow()
+    elif data.validation_status in ("rejetee", "en_attente"):
+        activity.validated_at = None
+
     db.commit()
     return {"message": "Statut mis à jour", "status": data.validation_status}

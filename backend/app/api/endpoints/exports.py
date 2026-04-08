@@ -5,13 +5,18 @@ from typing import Optional
 import io
 
 from app.db.database import get_db
-from app.models.models import Teacher, Activity, Resource, Course, AcademicYear
+from app.models.models import Teacher, Activity, Resource, Course, AcademicYear, QuotaStatutaire
+from app.core.security import require_authenticated, require_admin_or_secretary
 
 router = APIRouter()
 
 
 @router.get("/pdf/{teacher_id}")
-def export_teacher_pdf(teacher_id: int, db: Session = Depends(get_db)):
+def export_teacher_pdf(
+    teacher_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_authenticated),
+):
     try:
         from reportlab.lib.pagesizes import A4
         from reportlab.lib import colors
@@ -110,9 +115,11 @@ def export_teacher_pdf(teacher_id: int, db: Session = Depends(get_db)):
             f"{act.volume_horaire_calcule:.2f}",
             status_label,
         ])
-        total_volume += act.volume_horaire_calcule
+        
+        if act.validation_status == "valide":
+            total_volume += act.volume_horaire_calcule
 
-    act_data.append(["", "", "", "TOTAL", f"{total_volume:.2f} h", ""])
+    act_data.append(["", "", "", "TOTAL VALIDÉ", f"{total_volume:.2f} h", ""])
 
     act_table = Table(
         act_data,
@@ -136,11 +143,18 @@ def export_teacher_pdf(teacher_id: int, db: Session = Depends(get_db)):
     story.append(act_table)
     story.append(Spacer(1, 0.5 * cm))
 
+    # Fetch dynamic quota
+    quota = db.query(QuotaStatutaire).filter(
+        QuotaStatutaire.grade == teacher.grade,
+        QuotaStatutaire.statut == teacher.statut
+    ).first()
+    seuil_horaire = quota.quota_heures if quota else 192.0
+
     # Summary line
     summary_data = [
-        ["Volume horaire total :", f"{total_volume:.2f} h"],
-        ["Heures complémentaires (au-delà de 192h) :", f"{max(0.0, total_volume - 192.0):.2f} h"],
-        ["Montant estimé (FCFA) :", f"{max(0.0, total_volume - 192.0) * teacher.taux_horaire:,.0f}"],
+        ["Volume horaire validé :", f"{total_volume:.2f} h"],
+        [f"Heures complémentaires (au-delà de {seuil_horaire}h) :", f"{max(0.0, total_volume - seuil_horaire):.2f} h"],
+        ["Montant estimé (FCFA) :", f"{max(0.0, total_volume - seuil_horaire) * teacher.taux_horaire:,.0f}"],
     ]
     summary_table = Table(summary_data, colWidths=[9 * cm, 5 * cm])
     summary_table.setStyle(
@@ -170,6 +184,7 @@ def export_teacher_pdf(teacher_id: int, db: Session = Depends(get_db)):
 def export_global_excel(
     departement: Optional[str] = None,
     db: Session = Depends(get_db),
+    _=Depends(require_admin_or_secretary),
 ):
     try:
         from openpyxl import Workbook
@@ -221,16 +236,26 @@ def export_global_excel(
     ws.row_dimensions[3].height = 20
 
     # Data rows
-    SEUIL = 192.0
     query = db.query(Teacher)
     if departement:
         query = query.filter(Teacher.departement == departement)
     teachers = query.all()
 
     for row_num, teacher in enumerate(teachers, 4):
-        acts = db.query(Activity).filter(Activity.teacher_id == teacher.id).all()
+        acts = db.query(Activity).filter(
+            Activity.teacher_id == teacher.id,
+            Activity.validation_status == 'valide'
+        ).all()
         volume = sum(a.volume_horaire_calcule for a in acts)
-        heures_comp = max(0.0, volume - SEUIL)
+        
+        # Dynamic quota
+        quota = db.query(QuotaStatutaire).filter(
+            QuotaStatutaire.grade == teacher.grade,
+            QuotaStatutaire.statut == teacher.statut
+        ).first()
+        seuil = quota.quota_heures if quota else 192.0
+
+        heures_comp = max(0.0, volume - seuil)
         montant = heures_comp * teacher.taux_horaire
 
         row_data = [

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Boolean, Text
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Boolean, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.database import Base
@@ -11,6 +11,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     role = Column(String, default="teacher")  # admin, secretary, teacher
+    est_actif = Column(Boolean, default=True)
     face_encoding = Column(Text, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
@@ -54,8 +55,8 @@ class Resource(Base):
     __tablename__ = "resources"
 
     id = Column(Integer, primary_key=True, index=True)
-    type = Column(String, nullable=False)
-    niveau_complexite = Column(Integer, default=1)
+    type = Column(String, nullable=False)  # video, quiz, activite_interactive, document
+    niveau_complexite = Column(Integer, default=1)  # 1, 2, 3
     course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
     teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=False)
     date_creation = Column(DateTime, server_default=func.now())
@@ -69,14 +70,14 @@ class Activity(Base):
     __tablename__ = "activities"
 
     id = Column(Integer, primary_key=True, index=True)
-    type = Column(String, nullable=False)
+    type = Column(String, nullable=False)  # creation, mise_a_jour
     resource_id = Column(Integer, ForeignKey("resources.id"), nullable=False)
     teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=False)
     nb_sequences = Column(Integer, default=1)
     volume_horaire_calcule = Column(Float, default=0.0)
     academic_year_id = Column(Integer, ForeignKey("academic_years.id"), nullable=True)
     annee_academique = Column(String, nullable=True)
-    validation_status = Column(String, default="en_attente")
+    validation_status = Column(String, default="en_attente")  # en_attente, valide, rejetee
     validated_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     validated_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
@@ -93,6 +94,34 @@ class AcademicYear(Base):
     libelle = Column(String, nullable=False)
     date_debut = Column(String, nullable=True)
     date_fin = Column(String, nullable=True)
-    status = Column(Boolean, default=True)
+    status = Column(Boolean, default=False)  # True = année active
 
     activities = relationship("Activity", back_populates="academic_year")
+
+
+class CoefficientConfig(Base):
+    """Taux horaire par niveau de complexité et type d'activité — paramétrable par l'Admin."""
+    __tablename__ = "coefficient_configs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    niveau_complexite = Column(Integer, nullable=False)  # 1, 2, 3
+    type_activite = Column(String, nullable=False)       # creation, mise_a_jour
+    coefficient = Column(Float, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("niveau_complexite", "type_activite", name="uq_coeff_niveau_type"),
+    )
+
+
+class QuotaStatutaire(Base):
+    """Quota horaire annuel par grade et statut — paramétrable par l'Admin."""
+    __tablename__ = "quotas_statutaires"
+
+    id = Column(Integer, primary_key=True, index=True)
+    grade = Column(String, nullable=False)
+    statut = Column(String, nullable=False)   # Permanent, Vacataire
+    quota_heures = Column(Float, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("grade", "statut", name="uq_quota_grade_statut"),
+    )
