@@ -30,7 +30,7 @@ export function middleware(request: NextRequest) {
   if (path.startsWith('/secretary') && role !== 'secretary') {
     return NextResponse.redirect(new URL('/', request.url));
   }
-  if (path.startsWith('/teacher') && role !== 'teacher') {
+  if ((path.startsWith('/teacher/') || path === '/teacher') && role !== 'teacher') {
     return NextResponse.redirect(new URL('/', request.url));
   }
 

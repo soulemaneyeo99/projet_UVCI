@@ -60,17 +60,17 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <StatCard
           label="Charge Totale"
-          value={stats ? `${stats.total_volume} h` : '-'}
+          value={stats ? `${stats.volume_total} h` : '-'}
           icon={TrendingUp}
         />
         <StatCard
           label="Moyenne / Enseignant"
-          value={stats && stats.total_teachers > 0 ? `${(parseFloat(stats.total_volume) / stats.total_teachers).toFixed(1)} h` : '0 h'}
+          value={stats && stats.total_teachers > 0 ? `${(parseFloat(stats.volume_total) / stats.total_teachers).toFixed(1)} h` : '0 h'}
           icon={BarChart3}
         />
         <StatCard
           label="Budget Estime"
-          value={stats ? `${(parseFloat(stats.total_volume) * 10000).toLocaleString('fr-FR')} FCFA` : '-'}
+          value={stats ? `${(parseFloat(stats.volume_total) * 10000).toLocaleString('fr-FR')} FCFA` : '-'}
           icon={PieChart}
           description="Base sur un taux moyen de 10 000F/h"
         />
@@ -83,10 +83,10 @@ export default function ReportsPage() {
           <h3 className="mb-6 font-bold text-lg">Repartition par Departement</h3>
           <div className="space-y-6">
             {[
-              { name: 'Informatique & Numerique', hours: stats ? parseFloat(stats.total_volume) * 0.45 : 0, color: 'bg-primary' },
-              { name: 'Sciences de Gestion', hours: stats ? parseFloat(stats.total_volume) * 0.30 : 0, color: 'bg-primary/80' },
-              { name: 'Communication & Medias', hours: stats ? parseFloat(stats.total_volume) * 0.15 : 0, color: 'bg-primary/60' },
-              { name: 'Langues & Culture', hours: stats ? parseFloat(stats.total_volume) * 0.10 : 0, color: 'bg-primary/40' }
+              { name: 'Informatique & Numerique', hours: stats ? parseFloat(stats.volume_total) * 0.45 : 0, color: 'bg-primary' },
+              { name: 'Sciences de Gestion', hours: stats ? parseFloat(stats.volume_total) * 0.30 : 0, color: 'bg-primary/80' },
+              { name: 'Communication & Medias', hours: stats ? parseFloat(stats.volume_total) * 0.15 : 0, color: 'bg-primary/60' },
+              { name: 'Langues & Culture', hours: stats ? parseFloat(stats.volume_total) * 0.10 : 0, color: 'bg-primary/40' }
             ].map((dept, i) => (
               <div key={i} className="space-y-2">
                 <div className="flex items-center justify-between text-sm font-medium">
@@ -96,7 +96,7 @@ export default function ReportsPage() {
                 <div className="h-2 w-full rounded-full bg-gray-100 relative overflow-hidden">
                   <div 
                     className={`absolute left-0 top-0 h-full rounded-full ${dept.color}`} 
-                    style={{ width: stats && parseFloat(stats.total_volume) > 0 ? `${(dept.hours / parseFloat(stats.total_volume)) * 100}%` : '0%' }}
+                    style={{ width: stats && parseFloat(stats.volume_total) > 0 ? `${(dept.hours / parseFloat(stats.volume_total)) * 100}%` : '0%' }}
                   ></div>
                 </div>
               </div>
