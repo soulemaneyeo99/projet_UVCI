@@ -180,7 +180,7 @@ export default function TeacherDashboardPage() {
             <h3 style={{ fontWeight: 700, fontSize: '0.95rem' }}>Mes activités récentes</h3>
             <p style={{ fontSize: '0.75rem', color: '#64748B' }}>{activities.length} activité{activities.length > 1 ? 's' : ''} au total</p>
           </div>
-          <Link href="/teacher/activities" className="btn btn-ghost btn-sm">Voir toutes</Link>
+          <Link href="/enseignant/activites" className="btn btn-ghost btn-sm">Voir toutes</Link>
         </div>
         <div className="table-container">
           <table>

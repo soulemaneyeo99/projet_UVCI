@@ -113,7 +113,7 @@ export default function SecretaryTeachersPage() {
                     </td>
                     <td style={{ textAlign: 'center' }}>
                       <Link
-                        href={`/secretary/teachers/${t.id}`}
+                        href={`/secretaire/enseignants/${t.id}`}
                         className="btn btn-ghost btn-sm"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
                       >

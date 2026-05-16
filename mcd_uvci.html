@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>MCD — Projet UVCI</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #eee; padding: 20px; }
+  h1 { text-align:center; font-size:20px; color:#333; margin-bottom:4px; }
+  p  { text-align:center; color:#666; font-size:13px; margin-bottom:20px; }
+  svg { display:block; margin:0 auto; background:#fff;
+        border:1px solid #bbb; border-radius:6px;
+        box-shadow:0 3px 12px rgba(0,0,0,.18); }
+  .btn { display:block; margin:16px auto 0; padding:10px 28px;
+         background:#CC8800; color:#fff; border:none; border-radius:6px;
+         font-size:14px; cursor:pointer; }
+  .btn:hover { background:#aa6600; }
+  @media print { .btn { display:none; } }
+</style>
+</head>
+<body>
+<h1>Modèle Conceptuel de Données (MCD)</h1>
+<p>Système de gestion des heures pédagogiques — UVCI</p>
+
+<svg id="svg" width="1260" height="720" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>
+    .eb  { fill:#FFFF99; stroke:#CC8800; stroke-width:2; }
+    .eh  { fill:#FFD700; stroke:#CC8800; stroke-width:2; }
+    .et  { font:bold 12px Arial; fill:#333; text-anchor:middle; }
+    .ea  { font:11px Arial; fill:#333; text-anchor:start; }
+    .eu  { font:11px Arial; fill:#333; text-anchor:start; text-decoration:underline; }
+    .ae  { fill:#00CCCC; stroke:#006666; stroke-width:2; }
+    .at  { font:bold 11px Arial; fill:#004444; text-anchor:middle; dominant-baseline:middle; }
+    .cl  { stroke:#444; stroke-width:1.5; fill:none; }
+    .ct  { font:bold 10px Arial; fill:#CC0000; }
+    .sep { stroke:#CC8800; stroke-width:1; }
+  </style>
+</defs>
+
+<!-- ═══════════════════════════════════════════════
+     LIGNES DE CONNEXION  (dessinées en premier)
+════════════════════════════════════════════════ -->
+<!-- UTIL ↕ APPARTENIR ↕ ENSEIGNANT -->
+<line class="cl" x1="120" y1="218" x2="120" y2="282"/>
+<line class="cl" x1="120" y1="328" x2="120" y2="375"/>
+
+<!-- COURS ↕ CONTIENT ↕ RESSOURCE -->
+<line class="cl" x1="575" y1="240" x2="575" y2="275"/>
+<line class="cl" x1="575" y1="321" x2="575" y2="375"/>
+
+<!-- ENSEIGNANT → PRODUIT → RESSOURCE -->
+<line class="cl" x1="225" y1="468" x2="300" y2="468"/>
+<line class="cl" x1="400" y1="468" x2="475" y2="430"/>
+
+<!-- RESSOURCE → CONCERNE → ACTIVITE -->
+<line class="cl" x1="675" y1="428" x2="760" y2="440"/>
+<line class="cl" x1="860" y1="450" x2="960" y2="455"/>
+
+<!-- ANNEE ↕ REGROUPE ↕ ACTIVITE -->
+<line class="cl" x1="1110" y1="198" x2="1100" y2="272"/>
+<line class="cl" x1="1100" y1="318" x2="1090" y2="375"/>
+
+<!-- UTIL → VALIDE → ACTIVITE  (diagonal bas) -->
+<line class="cl" x1="160" y1="218" x2="590" y2="590"/>
+<line class="cl" x1="690" y1="618" x2="1030" y2="545"/>
+
+<!-- ═══════════════════════════════════════════════
+     CARDINALITÉS
+════════════════════════════════════════════════ -->
+<text class="ct" x="130" y="245">0,1</text>
+<text class="ct" x="130" y="370">1,1</text>
+
+<text class="ct" x="585" y="255">1,n</text>
+<text class="ct" x="585" y="370">1,1</text>
+
+<text class="ct" x="238" y="458">0,n</text>
+<text class="ct" x="440" y="418">0,n</text>
+
+<text class="ct" x="690" y="420">0,n</text>
+<text class="ct" x="878" y="442">0,n</text>
+
+<text class="ct" x="1118" y="216">1,n</text>
+<text class="ct" x="1105" y="368">1,n</text>
+
+<text class="ct" x="172" y="242">0,n</text>
+<text class="ct" x="970"  y="548">0,n</text>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : UTILISATEUR  x=20 y=60 w=200 h=158
+════════════════════════════════════════════════ -->
+<g transform="translate(20,60)">
+  <rect class="eb" width="200" height="158" rx="3"/>
+  <rect class="eh" width="200" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="200" y2="28"/>
+  <text class="et" x="100" y="19">UTILISATEUR</text>
+  <text class="eu" x="8" y="44">ID_Utilisateur</text>
+  <text class="ea" x="8" y="62">Email_Utilisateur</text>
+  <text class="ea" x="8" y="80">Mot_de_passe_Utilisateur</text>
+  <text class="ea" x="8" y="98">Role_Utilisateur</text>
+  <text class="ea" x="8" y="116">Est_actif_Utilisateur</text>
+  <text class="ea" x="8" y="134">Cree_a_Utilisateur</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : COURS  x=475 y=60 w=200 h=196
+════════════════════════════════════════════════ -->
+<g transform="translate(475,60)">
+  <rect class="eb" width="200" height="196" rx="3"/>
+  <rect class="eh" width="200" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="200" y2="28"/>
+  <text class="et" x="100" y="19">COURS</text>
+  <text class="eu" x="8" y="44">ID_Cours</text>
+  <text class="ea" x="8" y="62">Intitule_Cours</text>
+  <text class="ea" x="8" y="80">Filiere_Cours</text>
+  <text class="ea" x="8" y="98">Niveau_Cours</text>
+  <text class="ea" x="8" y="116">Semestre_Cours</text>
+  <text class="ea" x="8" y="134">Nombre_heures_Cours</text>
+  <text class="ea" x="8" y="152">Nombre_credits_Cours</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : ANNEE_ACADEMIQUE  x=1000 y=60 w=230 h=140
+════════════════════════════════════════════════ -->
+<g transform="translate(1000,60)">
+  <rect class="eb" width="230" height="140" rx="3"/>
+  <rect class="eh" width="230" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="230" y2="28"/>
+  <text class="et" x="115" y="19">ANNEE_ACADEMIQUE</text>
+  <text class="eu" x="8" y="44">ID_Annee_academique</text>
+  <text class="ea" x="8" y="62">Libelle_Annee_academique</text>
+  <text class="ea" x="8" y="80">Date_debut_Annee_acad.</text>
+  <text class="ea" x="8" y="98">Date_fin_Annee_acad.</text>
+  <text class="ea" x="8" y="116">Est_active_Annee_acad.</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : ENSEIGNANT  x=20 y=375 w=205 h=214
+════════════════════════════════════════════════ -->
+<g transform="translate(20,375)">
+  <rect class="eb" width="205" height="214" rx="3"/>
+  <rect class="eh" width="205" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="205" y2="28"/>
+  <text class="et" x="102" y="19">ENSEIGNANT</text>
+  <text class="eu" x="8" y="44">ID_Enseignant</text>
+  <text class="ea" x="8" y="62">Nom_Enseignant</text>
+  <text class="ea" x="8" y="80">Prenom_Enseignant</text>
+  <text class="ea" x="8" y="98">Grade_Enseignant</text>
+  <text class="ea" x="8" y="116">Statut_Enseignant</text>
+  <text class="ea" x="8" y="134">Departement_Enseignant</text>
+  <text class="ea" x="8" y="152">Taux_horaire_Enseignant</text>
+  <text class="ea" x="8" y="170">Contact_Enseignant</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : RESSOURCE  x=475 y=375 w=200 h=120
+════════════════════════════════════════════════ -->
+<g transform="translate(475,375)">
+  <rect class="eb" width="200" height="120" rx="3"/>
+  <rect class="eh" width="200" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="200" y2="28"/>
+  <text class="et" x="100" y="19">RESSOURCE</text>
+  <text class="eu" x="8" y="44">ID_Ressource</text>
+  <text class="ea" x="8" y="62">Type_contenu_Ressource</text>
+  <text class="ea" x="8" y="80">Niveau_complexite_Ress.</text>
+  <text class="ea" x="8" y="98">Date_creation_Ressource</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : ACTIVITE_PEDAGOGIQUE  x=960 y=375 w=250 h=178
+════════════════════════════════════════════════ -->
+<g transform="translate(960,375)">
+  <rect class="eb" width="250" height="178" rx="3"/>
+  <rect class="eh" width="250" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="250" y2="28"/>
+  <text class="et" x="125" y="19">ACTIVITE_PEDAGOGIQUE</text>
+  <text class="eu" x="8" y="44">ID_Activite_pedagogique</text>
+  <text class="ea" x="8" y="62">Type_activite_Activite</text>
+  <text class="ea" x="8" y="80">Nombre_sequences_Activite</text>
+  <text class="ea" x="8" y="98">Volume_horaire_calcule</text>
+  <text class="ea" x="8" y="116">Statut_validation_Activite</text>
+  <text class="ea" x="8" y="134">Date_validation_Activite</text>
+  <text class="ea" x="8" y="152">Cree_a_Activite</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ASSOCIATIONS  (ellipses cyan)
+════════════════════════════════════════════════ -->
+<!-- APPARTENIR: cx=120 cy=305 -->
+<ellipse class="ae" cx="120" cy="305" rx="52" ry="23"/>
+<text  class="at" x="120" y="305">APPARTENIR</text>
+
+<!-- CONTIENT: cx=575 cy=298 -->
+<ellipse class="ae" cx="575" cy="298" rx="46" ry="23"/>
+<text  class="at" x="575" y="298">CONTIENT</text>
+
+<!-- PRODUIT: cx=350 cy=468 -->
+<ellipse class="ae" cx="350" cy="468" rx="50" ry="23"/>
+<text  class="at" x="350" y="468">PRODUIT</text>
+
+<!-- CONCERNE: cx=810 cy=445 -->
+<ellipse class="ae" cx="810" cy="445" rx="50" ry="23"/>
+<text  class="at" x="810" y="445">CONCERNE</text>
+
+<!-- REGROUPE: cx=1100 cy=295 -->
+<ellipse class="ae" cx="1100" cy="295" rx="52" ry="23"/>
+<text  class="at" x="1100" y="295">REGROUPE</text>
+
+<!-- VALIDE: cx=640 cy=605 -->
+<ellipse class="ae" cx="640" cy="605" rx="46" ry="23"/>
+<text  class="at" x="640" y="605">VALIDE</text>
+
+<!-- ═══════════════════════════════════════════════
+     LÉGENDE
+════════════════════════════════════════════════ -->
+<rect x="20" y="660" width="16" height="14" fill="#FFFF99" stroke="#CC8800" stroke-width="1.5" rx="2"/>
+<text x="42" y="672" font="11px Arial" font-size="11" fill="#444">Entité</text>
+
+<ellipse cx="108" cy="667" rx="22" ry="11" fill="#00CCCC" stroke="#006666" stroke-width="1.5"/>
+<text x="136" y="672" font-size="11" fill="#444">Association</text>
+
+<text x="260" y="672" font-size="11" fill="#CC0000" font-weight="bold">0,n</text>
+<text x="278" y="672" font-size="11" fill="#444">Cardinalité</text>
+
+<text x="20"  y="695" font-size="10" fill="#888">* Les attributs soulignés constituent la clé primaire (identifiant) de l'entité.</text>
+</svg>
+
+<button class="btn" onclick="window.print()">Imprimer / Exporter en PDF</button>
+</body>
+</html>

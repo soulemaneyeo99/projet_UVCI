@@ -12,7 +12,6 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(String, default="teacher")  # admin, secretary, teacher
     est_actif = Column(Boolean, default=True)
-    face_encoding = Column(Text, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     teacher = relationship("Teacher", back_populates="user", uselist=False)

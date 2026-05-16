@@ -9,22 +9,22 @@ import {
 
 const adminNav = [
   { label: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Enseignants', href: '/teachers', icon: Users },
-  { label: 'Cours', href: '/courses', icon: BookOpen },
-  { label: 'Activités', href: '/activities', icon: ClipboardList },
-  { label: 'Rapports', href: '/reports', icon: BarChart2 },
+  { label: 'Enseignants', href: '/enseignants', icon: Users },
+  { label: 'Cours', href: '/cours', icon: BookOpen },
+  { label: 'Activités', href: '/activites', icon: ClipboardList },
+  { label: 'Rapports', href: '/rapports', icon: BarChart2 },
 ];
 const secretaryNav = [
-  { label: 'Tableau de bord', href: '/secretary/dashboard', icon: LayoutDashboard },
-  { label: 'Enseignants', href: '/secretary/teachers', icon: Users },
-  { label: 'Saisie activité', href: '/secretary/activities', icon: ClipboardList },
-  { label: 'Rapports', href: '/secretary/reports', icon: FileText },
+  { label: 'Tableau de bord', href: '/secretaire/dashboard', icon: LayoutDashboard },
+  { label: 'Enseignants', href: '/secretaire/enseignants', icon: Users },
+  { label: 'Saisie activité', href: '/secretaire/activites', icon: ClipboardList },
+  { label: 'Rapports', href: '/secretaire/rapports', icon: FileText },
 ];
 const teacherNav = [
-  { label: 'Mon tableau de bord', href: '/teacher/dashboard', icon: LayoutDashboard },
-  { label: 'Mes activités', href: '/teacher/activities', icon: ClipboardList },
-  { label: 'Mon profil', href: '/teacher/profile', icon: User },
-  { label: 'Récapitulatif', href: '/teacher/recapitulatif', icon: FileText },
+  { label: 'Mon tableau de bord', href: '/enseignant/dashboard', icon: LayoutDashboard },
+  { label: 'Mes activités', href: '/enseignant/activites', icon: ClipboardList },
+  { label: 'Mon profil', href: '/enseignant/profil', icon: User },
+  { label: 'Récapitulatif', href: '/enseignant/recapitulatif', icon: FileText },
 ];
 const roleLabels: Record<string, string> = {
   admin: 'Administrateur', secretary: 'Secrétaire', teacher: 'Enseignant',

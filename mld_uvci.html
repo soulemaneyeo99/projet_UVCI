@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>MLD — Projet UVCI</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#eee; padding:20px; margin:0; }
+  h1   { text-align:center; font-size:20px; color:#333; margin-bottom:4px; }
+  p.s  { text-align:center; color:#666; font-size:13px; margin-bottom:20px; }
+  svg  { display:block; margin:0 auto; background:#fff; border:1px solid #bbb;
+         border-radius:6px; box-shadow:0 2px 8px rgba(0,0,0,.15); }
+  .btn { display:block; margin:16px auto 30px; padding:10px 28px;
+         background:#1a5276; color:#fff; border:none; border-radius:5px;
+         font-size:14px; cursor:pointer; }
+  .btn:hover { background:#154360; }
+  @media print { .btn { display:none; } }
+</style>
+</head>
+<body>
+<h1>Modèle Logique de Données (MLD)</h1>
+<p class="s">Système de gestion des heures pédagogiques — UVCI</p>
+
+<svg width="1260" height="840" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="fk" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0,8 3,0 6" fill="#1a5276"/>
+  </marker>
+  <style>
+    .th { fill:#1a5276; }
+    .tb { fill:#EEF4FB; stroke:#2C5F8A; stroke-width:1.8; }
+    .tn { font:bold 12px Arial; fill:#fff; text-anchor:middle; }
+    .pk { font:bold 11px Arial; fill:#7D2D00; text-anchor:start; text-decoration:underline; }
+    .fk { font:italic 11px Arial; fill:#1a5276; text-anchor:start; }
+    .at { font:11px Arial; fill:#222; text-anchor:start; }
+    .lg { font:10px Arial; fill:#555; }
+    .cl { stroke:#1a5276; stroke-width:1.5; fill:none; marker-end:url(#fk); stroke-dasharray:5,3; }
+  </style>
+</defs>
+
+<!-- ═══ CONNEXIONS FK (dessinées en premier) ══════════════════════ -->
+<!-- 1. ENSEIGNANT.utilisateur_id → UTILISATEUR.id  (vertical) -->
+<line class="cl" x1="132" y1="280" x2="132" y2="218"/>
+
+<!-- 2. RESSOURCE.cours_id → COURS.id  (vertical) -->
+<line class="cl" x1="627" y1="280" x2="627" y2="218"/>
+
+<!-- 3. RESSOURCE.enseignant_id → ENSEIGNANT.id  (horizontal) -->
+<line class="cl" x1="510" y1="355" x2="252" y2="355"/>
+
+<!-- 4. ACTIVITE.ressource_id → RESSOURCE.id  (horizontal) -->
+<line class="cl" x1="895" y1="370" x2="748" y2="340"/>
+
+<!-- 5. ACTIVITE.enseignant_id → ENSEIGNANT.id  (long horizontal) -->
+<line class="cl" x1="895" y1="415" x2="252" y2="400"/>
+
+<!-- 6. ACTIVITE.annee_id → ANNEE_ACADEMIQUE.id  (vertical) -->
+<line class="cl" x1="1075" y1="280" x2="1075" y2="173"/>
+
+<!-- 7. ACTIVITE.valide_par → UTILISATEUR.id  (route par le haut) -->
+<polyline class="cl" points="1240,290 1250,290 1250,8 15,8 15,120 18,120"/>
+
+<!-- ═══ TABLE : UTILISATEUR  x=18 y=20 w=235 h=198 ═════════════ -->
+<rect class="tb" x="18" y="20" width="235" height="198" rx="3"/>
+<rect class="th" x="18" y="20" width="235" height="30"  rx="3"/>
+<text class="tn" x="136" y="40">UTILISATEUR</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="18" y1="50" x2="253" y2="50"/>
+<text class="pk" x="28" y="68">PK  id</text>
+<text class="at" x="28" y="88">     email</text>
+<text class="at" x="28" y="108">     mot_de_passe_hache</text>
+<text class="at" x="28" y="128">     role</text>
+<text class="at" x="28" y="148">     est_actif</text>
+<text class="at" x="28" y="168">     cree_a</text>
+
+<!-- ═══ TABLE : COURS  x=512 y=20 w=235 h=198 ══════════════════ -->
+<rect class="tb" x="512" y="20" width="235" height="198" rx="3"/>
+<rect class="th" x="512" y="20" width="235" height="30"  rx="3"/>
+<text class="tn" x="630" y="40">COURS</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="512" y1="50" x2="747" y2="50"/>
+<text class="pk" x="522" y="68">PK  id</text>
+<text class="at" x="522" y="88">     intitule</text>
+<text class="at" x="522" y="108">     filiere</text>
+<text class="at" x="522" y="128">     niveau</text>
+<text class="at" x="522" y="148">     semestre</text>
+<text class="at" x="522" y="168">     nb_heures</text>
+<text class="at" x="522" y="188">     nb_credits</text>
+
+<!-- ═══ TABLE : ANNEE_ACADEMIQUE  x=895 y=20 w=345 h=155 ════════ -->
+<rect class="tb" x="895" y="20" width="345" height="155" rx="3"/>
+<rect class="th" x="895" y="20" width="345" height="30"  rx="3"/>
+<text class="tn" x="1068" y="40">ANNEE_ACADEMIQUE</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="895" y1="50" x2="1240" y2="50"/>
+<text class="pk" x="905" y="68">PK  id</text>
+<text class="at" x="905" y="88">     libelle</text>
+<text class="at" x="905" y="108">     date_debut</text>
+<text class="at" x="905" y="128">     date_fin</text>
+<text class="at" x="905" y="148">     est_active</text>
+
+<!-- ═══ TABLE : ENSEIGNANT  x=18 y=280 w=235 h=262 ═════════════ -->
+<rect class="tb" x="18" y="280" width="235" height="262" rx="3"/>
+<rect class="th" x="18" y="280" width="235" height="30"  rx="3"/>
+<text class="tn" x="136" y="300">ENSEIGNANT</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="18" y1="310" x2="253" y2="310"/>
+<text class="pk" x="28" y="328">PK  id</text>
+<text class="at" x="28" y="348">     nom</text>
+<text class="at" x="28" y="368">     prenom</text>
+<text class="at" x="28" y="388">     grade</text>
+<text class="at" x="28" y="408">     statut</text>
+<text class="at" x="28" y="428">     departement</text>
+<text class="at" x="28" y="448">     taux_horaire</text>
+<text class="at" x="28" y="468">     email</text>
+<text class="at" x="28" y="488">     telephone</text>
+<text class="fk" x="28" y="508">FK  utilisateur_id  →  UTILISATEUR.id</text>
+
+<!-- ═══ TABLE : RESSOURCE  x=512 y=280 w=235 h=174 ═════════════ -->
+<rect class="tb" x="512" y="280" width="235" height="174" rx="3"/>
+<rect class="th" x="512" y="280" width="235" height="30"  rx="3"/>
+<text class="tn" x="630" y="300">RESSOURCE</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="512" y1="310" x2="747" y2="310"/>
+<text class="pk" x="522" y="328">PK  id</text>
+<text class="at" x="522" y="348">     type_contenu</text>
+<text class="at" x="522" y="368">     niveau_complexite</text>
+<text class="at" x="522" y="388">     date_creation</text>
+<text class="fk" x="522" y="408">FK  cours_id  →  COURS.id</text>
+<text class="fk" x="522" y="428">FK  enseignant_id  →  ENSEIGNANT.id</text>
+
+<!-- ═══ TABLE : ACTIVITE_PEDAGOGIQUE  x=895 y=280 w=345 h=308 ═══ -->
+<rect class="tb" x="895" y="280" width="345" height="308" rx="3"/>
+<rect class="th" x="895" y="280" width="345" height="30"  rx="3"/>
+<text class="tn" x="1068" y="300">ACTIVITE_PEDAGOGIQUE</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="895" y1="310" x2="1240" y2="310"/>
+<text class="pk" x="905" y="328">PK  id</text>
+<text class="at" x="905" y="348">     type_activite</text>
+<text class="at" x="905" y="368">     nb_sequences</text>
+<text class="at" x="905" y="388">     volume_horaire_calcule</text>
+<text class="at" x="905" y="408">     annee_academique</text>
+<text class="at" x="905" y="428">     statut_validation</text>
+<text class="at" x="905" y="448">     valide_le</text>
+<text class="at" x="905" y="468">     cree_a</text>
+<text class="fk" x="905" y="488">FK  ressource_id  →  RESSOURCE.id</text>
+<text class="fk" x="905" y="508">FK  enseignant_id  →  ENSEIGNANT.id</text>
+<text class="fk" x="905" y="528">FK  annee_id  →  ANNEE_ACADEMIQUE.id</text>
+<text class="fk" x="905" y="548">FK  valide_par  →  UTILISATEUR.id</text>
+
+<!-- ═══ TABLE : CONFIGURATION_COEFFICIENT  x=175 y=620 w=290 h=130 -->
+<rect class="tb" x="175" y="620" width="295" height="130" rx="3"/>
+<rect class="th" x="175" y="620" width="295" height="30"  rx="3"/>
+<text class="tn" x="323" y="640">CONFIGURATION_COEFFICIENT</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="175" y1="650" x2="470" y2="650"/>
+<text class="pk" x="185" y="668">PK  id</text>
+<text class="at" x="185" y="688">     niveau_complexite</text>
+<text class="at" x="185" y="708">     type_activite</text>
+<text class="at" x="185" y="728">     coefficient</text>
+<text class="lg" x="185" y="745">UNIQUE (niveau_complexite, type_activite)</text>
+
+<!-- ═══ TABLE : QUOTA_STATUTAIRE  x=660 y=620 w=270 h=130 ════════ -->
+<rect class="tb" x="660" y="620" width="270" height="130" rx="3"/>
+<rect class="th" x="660" y="620" width="270" height="30"  rx="3"/>
+<text class="tn" x="795" y="640">QUOTA_STATUTAIRE</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="660" y1="650" x2="930" y2="650"/>
+<text class="pk" x="670" y="668">PK  id</text>
+<text class="at" x="670" y="688">     grade</text>
+<text class="at" x="670" y="708">     statut</text>
+<text class="at" x="670" y="728">     nb_heures_quota</text>
+<text class="lg" x="670" y="745">UNIQUE (grade, statut)</text>
+
+<!-- ═══ LÉGENDE ══════════════════════════════════════════════════ -->
+<rect x="18" y="795" width="14" height="14" fill="#1a5276" rx="2"/>
+<text x="38" y="806" font-size="11" font-family="Arial" fill="#444">En-tête de table</text>
+<text x="170" y="806" font-size="11" font-family="Arial" fill="#7D2D00" font-weight="bold" text-decoration="underline">PK</text>
+<text x="190" y="806" font-size="11" font-family="Arial" fill="#444">Clé primaire (soulignée)</text>
+<text x="370" y="806" font-size="11" font-family="Arial" fill="#1a5276" font-style="italic">FK</text>
+<text x="390" y="806" font-size="11" font-family="Arial" fill="#444">Clé étrangère</text>
+<line x1="490" y1="800" x2="530" y2="800" stroke="#1a5276" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#fk)"/>
+<text x="540" y="806" font-size="11" font-family="Arial" fill="#444">Relation de référence</text>
+</svg>
+
+<button class="btn" onclick="window.print()">Imprimer / Exporter en PDF</button>
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Utilisateur - Système de Gestion des Heures UVCI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e40af; /* UVCI Blue */
+            --primary-light: #3b82f6;
+            --secondary: #10b981; /* Success Green */
+            --accent: #f59e0b; /* Warning Amber */
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --sidebar-width: 280px;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-card);
+            border-right: 1px solid #e2e8f0;
+            position: fixed;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-container .icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .logo-container .title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: #f1f5f9;
+            color: var(--primary);
+        }
+
+        .nav-link.active {
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin: 1.5rem 0 0.5rem 1rem;
+            font-weight: 600;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 4rem 10%;
+            max-width: 1400px;
+        }
+
+        header {
+            margin-bottom: 4rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        section {
+            margin-bottom: 5rem;
+            scroll-margin-top: 2rem;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2::before {
+            content: "";
+            display: block;
+            width: 4px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: var(--primary);
+        }
+
+        p {
+            margin-bottom: 1.25rem;
+            color: #475569;
+            font-size: 1.05rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid #f1f5f9;
+            margin-bottom: 2rem;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem;
+            border-radius: 4px 8px 8px 4px;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box {
+            background: #fffbeb;
+            border-left: 4px solid var(--accent);
+            padding: 1.25rem;
+            border-radius: 4px 8px 8px 4px;
+            margin: 1.5rem 0;
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: #475569;
+        }
+
+        .screenshot {
+            width: 100%;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            margin: 2rem 0;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .screenshot img {
+            width: 100%;
+            display: block;
+        }
+
+        .screenshot-caption {
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            padding: 1rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .step {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-admin { background: #fee2e2; color: #991b1b; }
+        .badge-secretary { background: #fef3c7; color: #92400e; }
+        .badge-teacher { background: #dcfce7; color: #166534; }
+
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #e11d48;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 80px; padding: 2rem 0.5rem; }
+            .logo-container .title, .nav-link span, .nav-section-title { display: none; }
+            .main-content { margin-left: 80px; padding: 2rem 5%; }
+            .nav-link { justify-content: center; }
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar { display: none !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
+            header { margin-bottom: 2rem; }
+            h1 { font-size: 2.2rem; text-align: center; color: #000; }
+            h2 { color: #000; page-break-before: always; border-bottom: 2px solid #000; }
+            h2::before { display: none; }
+            .card { box-shadow: none !important; border: 1px solid #e2e8f0; break-inside: avoid; }
+            .screenshot { break-inside: avoid; border: 1px solid #000; }
+            .badge { border: 1px solid #000; }
+            footer { position: relative; bottom: 0; width: 100%; border-top: 1px solid #ccc; padding-top: 10px; font-size: 10pt; }
+            @page { size: A4; margin: 2cm; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo-container">
+            <div class="icon">U</div>
+            <div class="title">UVCI<br><span style="font-size: 0.7rem; font-weight: 500; color: #64748b;">GESTION HEURES</span></div>
+        </div>
+        
+        <ul class="nav-list">
+            <li class="nav-item"><a href="#intro" class="nav-link"><span>Introduction</span></a></li>
+            <li class="nav-item"><a href="#auth" class="nav-link"><span>Authentification</span></a></li>
+            
+            <div class="nav-section-title">Modules par Rôle</div>
+            <li class="nav-item"><a href="#admin" class="nav-link"><span>Administrateur</span></a></li>
+            <li class="nav-item"><a href="#secretaire" class="nav-link"><span>Secrétaire</span></a></li>
+            <li class="nav-item"><a href="#enseignant" class="nav-link"><span>Enseignant</span></a></li>
+            
+            <div class="nav-section-title">Technique</div>
+            <li class="nav-item"><a href="#regles" class="nav-link"><span>Règles de Calcul</span></a></li>
+            <li class="nav-item"><a href="#exports" class="nav-link"><span>Exports & Rapports</span></a></li>
+            <li class="nav-item"><a href="#faq" class="nav-link"><span>FAQ / Support</span></a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <div class="version-badge">Version 1.1 — Projet Académique</div>
+            <h1>Guide d'Utilisation du Système</h1>
+            <p>Application de Gestion des Heures des Enseignants - Université Virtuelle de Côte d'Ivoire</p>
+        </header>
+
+        <section id="intro">
+            <h2>Introduction</h2>
+            <div class="card">
+                <p>Bienvenue dans le guide utilisateur de l'application de gestion des heures pédagogiques de l'UVCI. Cette solution a été conçue pour automatiser le suivi des activités des enseignants, sécuriser les accès et fiabiliser les calculs de volumes horaires.</p>
+                <p>Le système repose sur une architecture moderne utilisant <strong>Next.js</strong> pour l'interface et <strong>FastAPI</strong> pour le moteur de calcul métier.</p>
+                <h3>Objectifs du Système</h3>
+                <ul>
+                    <li>Centralisation des données enseignants et cours.</li>
+                    <li>Calcul automatique des heures selon les barèmes UVCI (Niveau 1, 2, 3).</li>
+                    <li>Suivi en temps réel de la charge statutaire et des heures complémentaires.</li>
+                    <li>Génération de fiches de paiement transparentes.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="auth">
+            <h2>Authentification</h2>
+            <div class="card">
+                <p>L'accès au système est sécurisé par vos identifiants académiques personnels.</p>
+                
+                <div class="screenshot">
+                    <img src="https://antigravity-media.s3.amazonaws.com/uvci_standard_login_mockup_1778927643783.png" alt="Interface de Connexion">
+                    <div class="screenshot-caption">Capture d'écran 1 : Interface de connexion sécurisée</div>
+                </div>
+
+                <h3>Procédure de Connexion</h3>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Saisie de l'email :</strong> Entrez votre adresse email institutionnelle (ex: prenom.nom@uvci.edu.ci).
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Mot de passe :</strong> Saisissez votre mot de passe confidentiel.
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Validation :</strong> Cliquez sur le bouton "Login" pour accéder à votre tableau de bord selon votre rôle.
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>Note :</strong> Si vous avez oublié votre mot de passe, contactez l'administrateur système pour une réinitialisation.
+                </div>
+            </div>
+        </section>
+
+        <section id="admin">
+            <h2>Espace Administrateur <span class="badge badge-admin">ADMIN</span></h2>
+            <div class="card">
+                <p>En tant qu'administrateur, vous avez un contrôle total sur la configuration technique du système.</p>
+                
+                <h3>Gestion des Utilisateurs</h3>
+                <p>Le module de gestion permet de créer et d'administrer les comptes :</p>
+                <ul>
+                    <li>Attribuez le <strong>Rôle</strong> approprié (Admin, Secretaire, Enseignant).</li>
+                    <li>Définissez le <strong>Grade</strong> pour les enseignants.</li>
+                    <li>Gérez l'activation ou la suspension des accès.</li>
+                </ul>
+
+                <h3>Paramétrage Global</h3>
+                <p>Configuration des barèmes, taux horaires et quotas annuels par grade.</p>
+            </div>
+        </section>
+
+        <section id="secretaire">
+            <h2>Espace Secrétariat <span class="badge badge-secretary">SECRETAIRE</span></h2>
+            <div class="card">
+                <p>Le Secrétaire Principal est responsable de la saisie des données d'activité.</p>
+                
+                <div class="screenshot">
+                    <img src="https://antigravity-media.s3.amazonaws.com/uvci_dashboard_mockup_1778883906919.png" alt="Dashboard de Gestion">
+                    <div class="screenshot-caption">Capture d'écran 2 : Tableau de bord de suivi des activités</div>
+                </div>
+
+                <h3>Saisie des Activités</h3>
+                <ol>
+                    <li>Sélectionnez l'enseignant.</li>
+                    <li>Choisissez le <strong>Cours</strong> et le type de <strong>Ressource</strong>.</li>
+                    <li>Indiquez le <strong>Niveau de Complexité</strong> (N1, N2 ou N3).</li>
+                    <li>Le volume horaire est calculé automatiquement.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="enseignant">
+            <h2>Espace Enseignant <span class="badge badge-teacher">ENSEIGNANT</span></h2>
+            <div class="card">
+                <p>Votre espace personnel pour le suivi de votre charge de travail.</p>
+                
+                <h3>Tableau de Bord</h3>
+                <ul>
+                    <li>Total d'heures effectuées.</li>
+                    <li>Détail Heures Statutaires vs Heures Complémentaires.</li>
+                    <li>Téléchargement des fiches individuelles.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="regles">
+            <h2>Règles de Calcul</h2>
+            <div class="card">
+                <p>Le système applique la grille UVCI :</p>
+                <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                        <tr style="background: #f1f5f9; text-align: left;">
+                            <th style="padding: 12px; border: 1px solid #e2e8f0;">Niveau</th>
+                            <th style="padding: 12px; border: 1px solid #e2e8f0;">Volume Horaire (20 seq)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td style="padding: 12px; border: 1px solid #e2e8f0;">Niveau 1</td><td style="padding: 12px; border: 1px solid #e2e8f0;">16 h</td></tr>
+                        <tr><td style="padding: 12px; border: 1px solid #e2e8f0;">Niveau 2</td><td style="padding: 12px; border: 1px solid #e2e8f0;">30 h</td></tr>
+                        <tr><td style="padding: 12px; border: 1px solid #e2e8f0;">Niveau 3</td><td style="padding: 12px; border: 1px solid #e2e8f0;">60 h</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="exports">
+            <h2>Exports</h2>
+            <div class="card">
+                <p>Génération de rapports aux formats PDF et Excel pour les états de paiement et les statistiques annuelles.</p>
+            </div>
+        </section>
+
+        <section id="faq">
+            <h2>FAQ / Support</h2>
+            <div class="card">
+                <div style="margin-bottom: 1.5rem;">
+                    <strong>Q : J'ai perdu mon mot de passe.</strong><br>
+                    <span>R : Contactez l'administrateur système de l'UVCI.</span>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            &copy; 2026 Université Virtuelle de Côte d'Ivoire (UVCI) - Projet Académique
+        </footer>
+    </main>
+
+    <script>
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.pageYOffset >= sectionTop - 100) { current = section.getAttribute('id'); }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) { link.classList.add('active'); }
+            });
+        });
+    </script>
+</body>
+</html>

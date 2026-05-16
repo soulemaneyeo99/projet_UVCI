@@ -7,31 +7,28 @@ export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Paths that do not require authentication
-  const isPublicPath = path === '/';
+  const isPublicPath = path === '/login' || path === '/';
 
   if (!token && !isPublicPath) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   if (isPublicPath && token && role) {
     // Redirect authenticated users trying to access login
     if (role === 'admin') return NextResponse.redirect(new URL('/dashboard', request.url));
-    if (role === 'secretary') return NextResponse.redirect(new URL('/secretary/dashboard', request.url));
-    if (role === 'teacher') return NextResponse.redirect(new URL('/teacher/dashboard', request.url));
+    if (role === 'secretary') return NextResponse.redirect(new URL('/secretaire/dashboard', request.url));
+    if (role === 'teacher') return NextResponse.redirect(new URL('/enseignant/dashboard', request.url));
   }
 
   // Role-based route guards
-  if (path.startsWith('/dashboard') && role !== 'admin') {
-    return NextResponse.redirect(new URL('/', request.url));
+  if ((path.startsWith('/dashboard') || path.startsWith('/enseignants') || path.startsWith('/cours') || path.startsWith('/activites') || path.startsWith('/rapports')) && role !== 'admin') {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
-  if (path.startsWith('/admin') && role !== 'admin') {
-    return NextResponse.redirect(new URL('/', request.url));
+  if (path.startsWith('/secretaire') && role !== 'secretary') {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
-  if (path.startsWith('/secretary') && role !== 'secretary') {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-  if ((path.startsWith('/teacher/') || path === '/teacher') && role !== 'teacher') {
-    return NextResponse.redirect(new URL('/', request.url));
+  if (path.startsWith('/enseignant') && role !== 'teacher') {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   return NextResponse.next();

@@ -52,8 +52,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     document.cookie = `role=${role}; path=/; max-age=28800`;
 
     if (role === 'admin') router.push('/dashboard');
-    else if (role === 'secretary') router.push('/secretary/dashboard');
-    else router.push('/teacher/dashboard');
+    else if (role === 'secretary') router.push('/secretaire/dashboard');
+    else router.push('/enseignant/dashboard');
   };
 
   const logout = () => {
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     document.cookie = 'role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     setUser(null);
-    router.push('/');
+    router.push('/login');
   };
 
   return (

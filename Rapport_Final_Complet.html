@@ -1,0 +1,889 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Rapport UVCI</title>
+<style>
+    body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.5; color: #000; max-width: 21cm; margin: 0 auto; }
+    h1 { font-size: 24pt; text-align: center; color: #2C3E50; margin-top: 50px; page-break-after: always; }
+    h2 { font-size: 18pt; color: #2980B9; border-bottom: 2px solid #2980B9; margin-top: 40px; page-break-before: always; }
+    h3 { font-size: 14pt; color: #E67E22; margin-top: 30px; }
+    h4 { font-size: 12pt; font-weight: bold; margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 10pt; }
+    th, td { border: 1px solid #bdc3c7; padding: 8px; text-align: left; }
+    th { background-color: #ecf0f1; }
+    .svg-container { text-align: center; margin: 20px 0; page-break-inside: avoid; }
+    .svg-container svg { max-width: 100%; height: auto; }
+    .sql-code { font-family: monospace; font-size: 9pt; background: #f9f9f9; padding: 10px; border: 1px solid #ddd; }
+    pre { background: #f9f9f9; padding: 10px; border: 1px solid #ddd; font-size: 10pt; white-space: pre-wrap; }
+    .cover-page { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; text-align: center; }
+    @page { size: A4; margin: 2cm; }
+</style>
+</head>
+<body>
+    <div class="cover-page">
+        <h1>RAPPORT DE PROJET<br><br>SYSTÈME DE GESTION DES HEURES PÉDAGOGIQUES DES ENSEIGNANTS DE L'UVCI</h1>
+        <p style="margin-top:50px; font-size:14pt;">Université Virtuelle de Côte d'Ivoire</p>
+    </div>
+    
+<hr />
+<p><em>Note de rédaction : Les sections d'entête (Dédicaces, Remerciements, Avant-propos, Liste des abréviations, Liste des figures) sont personnelles. Vous pourrez les remplir avec vos propres mots dans le document Word final.</em></p>
+<p><strong>Dédicaces</strong>
+[À rédiger par l'étudiant]</p>
+<p><strong>Remerciements</strong>
+[À rédiger par l'étudiant]</p>
+<p><strong>Avant-propos</strong>
+[À rédiger par l'étudiant]</p>
+<p><strong>Liste des abréviations et sigles</strong>
+- <strong>UVCI</strong> : Université Virtuelle de Côte d'Ivoire
+- <strong>MCD</strong> : Modèle Conceptuel de Données
+- <strong>MCT</strong> : Modèle Conceptuel de Traitements
+- <strong>MLD</strong> : Modèle Logique de Données
+- <strong>MOT</strong> : Modèle Organisationnel de Traitements
+- <strong>MPD</strong> : Modèle Physique de Données
+- <strong>SGBD</strong> : Système de Gestion de Base de Données</p>
+<hr />
+<h2>INTRODUCTION ET CONTEXTE DU PROJET</h2>
+<p>L'Université Virtuelle de Côte d'Ivoire (UVCI) est une institution innovante dont le modèle pédagogique repose massivement sur les technologies de l'information et de la communication. Dans ce contexte d'enseignement à distance et hybride, le volume des ressources pédagogiques numériques créées et mises à jour par le corps enseignant connaît une croissance exponentielle.</p>
+<p>Cependant, la gestion de ces activités pédagogiques et, plus précisément, la comptabilisation des heures supplémentaires des enseignants et vacataires pour le calcul de leur rémunération, est devenue une tâche administrative complexe. </p>
+<p>Le présent projet s'inscrit dans une volonté de modernisation et d'automatisation des processus administratifs. L'objectif principal est de concevoir et de développer une plateforme web sécurisée capable de gérer efficacement la déclaration, la validation et la comptabilisation des activités pédagogiques des enseignants, tout en facilitant la génération des états de rémunération par l'administration.</p>
+<p>Ce document retrace l'intégralité du cycle de vie du projet, de l'étude préalable à la réalisation technique, en s'appuyant sur la méthodologie Merise pour garantir une conception robuste et pérenne.</p>
+<hr />
+<h2>CHAPITRE 2 : ÉTUDE PRÉALABLE DU PROJET</h2>
+<h3>I. Présentation du projet</h3>
+<h4>1. Présentation de l’existant</h4>
+<p>Actuellement, la déclaration des activités pédagogiques (création de vidéos, rédaction de quiz, montage de cours interactifs) s'effectue de manière décentralisée. Les enseignants soumettent leurs réalisations via des fiches manuelles ou des tableurs partagés. L'administration centralise ensuite ces données, procède à des vérifications manuelles fastidieuses, puis calcule les volumes horaires correspondants en appliquant des coefficients de pondération.</p>
+<h4>2. Critique de l’existant</h4>
+<p>Le système actuel présente plusieurs limites majeures :
+- <strong>Lourdeur administrative :</strong> La saisie manuelle des données multiplie les risques d'erreurs (doublons, oublis).
+- <strong>Lenteur des processus :</strong> Le temps de traitement entre la déclaration de l'activité et le calcul de la rémunération est très long.
+- <strong>Manque de transparence :</strong> Les enseignants ont des difficultés à suivre en temps réel le statut de validation de leurs activités et le calcul de leurs quotas.
+- <strong>Sécurité et intégrité :</strong> Les tableurs ne garantissent pas la sécurité et la traçabilité des validations.</p>
+<h4>3. Proposition de solution</h4>
+<p>Pour pallier ces dysfonctionnements, nous proposons la mise en place d'une application web centralisée. Cette solution permettra :
+- L'authentification sécurisée des différents acteurs (Enseignants, Secrétaires, Administrateurs).
+- La déclaration intuitive des activités par les enseignants.
+- L'automatisation du calcul des volumes horaires via un moteur de règles paramétrable.
+- Un workflow de validation numérique garantissant la traçabilité.
+- La génération automatique des états de paiement (fichiers d'export) après application des quotas statutaires.</p>
+<h3>II. Présentation de la méthode d’analyse</h3>
+<h4>1. Choix de la méthode d’analyse</h4>
+<p>Pour la modélisation de ce système, nous avons opté pour la méthode <strong>MERISE</strong> (Méthode d'Étude et de Réalisation Informatique pour les Systèmes d'Entreprise). Ce choix se justifie par la rigueur de cette méthode dans la séparation des données et des traitements, ce qui est particulièrement adapté pour un système de gestion administrative où la structure des données (enseignants, cours, activités) et les règles de gestion (calculs des heures) sont complexes et doivent être clairement définies avant tout développement.</p>
+<h3>III. Outils de réalisation de l’application</h3>
+<h4>1. Système de gestion de base de données</h4>
+<p>Nous avons choisi <strong>PostgreSQL</strong>, un SGBD relationnel open source reconnu pour sa fiabilité, sa robustesse et sa gestion avancée de la concurrence, parfaitement adapté pour garantir l'intégrité des données financières et administratives.</p>
+<h4>2. Présentation de l’environnement de développement</h4>
+<ul>
+<li><strong>Éditeur de code :</strong> Visual Studio Code (VS Code), pour ses extensions facilitant le développement full-stack.</li>
+<li><strong>Gestionnaire de version :</strong> Git, pour le suivi des modifications du code source.</li>
+</ul>
+<h4>3. Présentation des technologies utilisées</h4>
+<ul>
+<li><strong>Backend :</strong> <strong>FastAPI</strong> (Python), choisi pour sa haute performance, sa génération automatique de documentation (Swagger) et sa robustesse dans la création d'API RESTful.</li>
+<li><strong>Frontend :</strong> <strong>Next.js</strong> (React), pour le développement d'interfaces utilisateurs dynamiques, réactives et fluides.</li>
+<li><strong>ORM :</strong> <strong>SQLAlchemy</strong>, pour faciliter les interactions avec la base de données.</li>
+</ul>
+<hr />
+<h2>CHAPITRE 3 : ÉTUDE DÉTAILLÉE DU PROJET</h2>
+<h3>I. Niveau conceptuel</h3>
+<h4>1. Construction du Modèle Conceptuel de Données (MCD)</h4>
+<p><strong>a. Règles de gestion</strong>
+Les règles de gestion définissent les contraintes métiers du système :
+- <strong>RG1 :</strong> Un utilisateur est identifié de manière unique par son adresse email.
+- <strong>RG2 :</strong> Chaque enseignant (permanent ou vacataire) doit posséder un compte pour interagir avec le système.
+- <strong>RG3 :</strong> Une ressource pédagogique est obligatoirement rattachée à un et un seul cours.
+- <strong>RG4 :</strong> Le volume horaire calculé d'une activité est le produit du nombre de séquences par le coefficient paramétré pour ce type d'activité.
+- <strong>RG5 :</strong> Toute activité nouvellement déclarée prend le statut "En attente" et doit être validée par l'administration.
+- <strong>RG6 :</strong> La rémunération n'est calculée que sur les heures supplémentaires (Volume validé - Quota statutaire).</p>
+<p><strong>b. Structure d'accès théorique</strong>
+Pour générer l'état de rémunération, le système accède à l'entité <code>ANNEE_ACADEMIQUE</code>, parcourt l'association <code>REGROUPE</code> pour lister les <code>ACTIVITE_PEDAGOGIQUE</code> validées. Par association, il identifie l'<code>ENSEIGNANT</code> concerné, extrait son grade et statut, consulte l'entité <code>QUOTA_STATUTAIRE</code> pour appliquer la soustraction, et calcule enfin le montant à l'aide du taux horaire.</p>
+<p><strong>c. Dictionnaire des données</strong>
+<em>(Un extrait des données principales)</em>
+- <code>ENSEIGNANT</code> : id, nom, prenom, grade, statut, departement, taux_horaire, email.
+- <code>ACTIVITE_PEDAGOGIQUE</code> : id, type_activite, nb_sequences, volume_horaire_calcule, statut_validation.
+- <code>RESSOURCE</code> : id, type_contenu, niveau_complexite.
+- <code>QUOTA_STATUTAIRE</code> : id, grade, statut, nb_heures_quota.</p>
+<p><strong>d. Modèle Conceptuel de Données (MCD)</strong></p>
+<div class="svg-container"><svg id="svg" width="1260" height="720" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>
+    .eb  { fill:#FFFF99; stroke:#CC8800; stroke-width:2; }
+    .eh  { fill:#FFD700; stroke:#CC8800; stroke-width:2; }
+    .et  { font:bold 12px Arial; fill:#333; text-anchor:middle; }
+    .ea  { font:11px Arial; fill:#333; text-anchor:start; }
+    .eu  { font:11px Arial; fill:#333; text-anchor:start; text-decoration:underline; }
+    .ae  { fill:#00CCCC; stroke:#006666; stroke-width:2; }
+    .at  { font:bold 11px Arial; fill:#004444; text-anchor:middle; dominant-baseline:middle; }
+    .cl  { stroke:#444; stroke-width:1.5; fill:none; }
+    .ct  { font:bold 10px Arial; fill:#CC0000; }
+    .sep { stroke:#CC8800; stroke-width:1; }
+  </style>
+</defs>
+
+<!-- ═══════════════════════════════════════════════
+     LIGNES DE CONNEXION  (dessinées en premier)
+════════════════════════════════════════════════ -->
+<!-- UTIL ↕ APPARTENIR ↕ ENSEIGNANT -->
+<line class="cl" x1="120" y1="218" x2="120" y2="282"/>
+<line class="cl" x1="120" y1="328" x2="120" y2="375"/>
+
+<!-- COURS ↕ CONTIENT ↕ RESSOURCE -->
+<line class="cl" x1="575" y1="240" x2="575" y2="275"/>
+<line class="cl" x1="575" y1="321" x2="575" y2="375"/>
+
+<!-- ENSEIGNANT → PRODUIT → RESSOURCE -->
+<line class="cl" x1="225" y1="468" x2="300" y2="468"/>
+<line class="cl" x1="400" y1="468" x2="475" y2="430"/>
+
+<!-- RESSOURCE → CONCERNE → ACTIVITE -->
+<line class="cl" x1="675" y1="428" x2="760" y2="440"/>
+<line class="cl" x1="860" y1="450" x2="960" y2="455"/>
+
+<!-- ANNEE ↕ REGROUPE ↕ ACTIVITE -->
+<line class="cl" x1="1110" y1="198" x2="1100" y2="272"/>
+<line class="cl" x1="1100" y1="318" x2="1090" y2="375"/>
+
+<!-- UTIL → VALIDE → ACTIVITE  (diagonal bas) -->
+<line class="cl" x1="160" y1="218" x2="590" y2="590"/>
+<line class="cl" x1="690" y1="618" x2="1030" y2="545"/>
+
+<!-- ═══════════════════════════════════════════════
+     CARDINALITÉS
+════════════════════════════════════════════════ -->
+<text class="ct" x="130" y="245">0,1</text>
+<text class="ct" x="130" y="370">1,1</text>
+
+<text class="ct" x="585" y="255">1,n</text>
+<text class="ct" x="585" y="370">1,1</text>
+
+<text class="ct" x="238" y="458">0,n</text>
+<text class="ct" x="440" y="418">0,n</text>
+
+<text class="ct" x="690" y="420">0,n</text>
+<text class="ct" x="878" y="442">0,n</text>
+
+<text class="ct" x="1118" y="216">1,n</text>
+<text class="ct" x="1105" y="368">1,n</text>
+
+<text class="ct" x="172" y="242">0,n</text>
+<text class="ct" x="970"  y="548">0,n</text>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : UTILISATEUR  x=20 y=60 w=200 h=158
+════════════════════════════════════════════════ -->
+<g transform="translate(20,60)">
+  <rect class="eb" width="200" height="158" rx="3"/>
+  <rect class="eh" width="200" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="200" y2="28"/>
+  <text class="et" x="100" y="19">UTILISATEUR</text>
+  <text class="eu" x="8" y="44">ID_Utilisateur</text>
+  <text class="ea" x="8" y="62">Email_Utilisateur</text>
+  <text class="ea" x="8" y="80">Mot_de_passe_Utilisateur</text>
+  <text class="ea" x="8" y="98">Role_Utilisateur</text>
+  <text class="ea" x="8" y="116">Est_actif_Utilisateur</text>
+  <text class="ea" x="8" y="134">Cree_a_Utilisateur</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : COURS  x=475 y=60 w=200 h=196
+════════════════════════════════════════════════ -->
+<g transform="translate(475,60)">
+  <rect class="eb" width="200" height="196" rx="3"/>
+  <rect class="eh" width="200" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="200" y2="28"/>
+  <text class="et" x="100" y="19">COURS</text>
+  <text class="eu" x="8" y="44">ID_Cours</text>
+  <text class="ea" x="8" y="62">Intitule_Cours</text>
+  <text class="ea" x="8" y="80">Filiere_Cours</text>
+  <text class="ea" x="8" y="98">Niveau_Cours</text>
+  <text class="ea" x="8" y="116">Semestre_Cours</text>
+  <text class="ea" x="8" y="134">Nombre_heures_Cours</text>
+  <text class="ea" x="8" y="152">Nombre_credits_Cours</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : ANNEE_ACADEMIQUE  x=1000 y=60 w=230 h=140
+════════════════════════════════════════════════ -->
+<g transform="translate(1000,60)">
+  <rect class="eb" width="230" height="140" rx="3"/>
+  <rect class="eh" width="230" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="230" y2="28"/>
+  <text class="et" x="115" y="19">ANNEE_ACADEMIQUE</text>
+  <text class="eu" x="8" y="44">ID_Annee_academique</text>
+  <text class="ea" x="8" y="62">Libelle_Annee_academique</text>
+  <text class="ea" x="8" y="80">Date_debut_Annee_acad.</text>
+  <text class="ea" x="8" y="98">Date_fin_Annee_acad.</text>
+  <text class="ea" x="8" y="116">Est_active_Annee_acad.</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : ENSEIGNANT  x=20 y=375 w=205 h=214
+════════════════════════════════════════════════ -->
+<g transform="translate(20,375)">
+  <rect class="eb" width="205" height="214" rx="3"/>
+  <rect class="eh" width="205" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="205" y2="28"/>
+  <text class="et" x="102" y="19">ENSEIGNANT</text>
+  <text class="eu" x="8" y="44">ID_Enseignant</text>
+  <text class="ea" x="8" y="62">Nom_Enseignant</text>
+  <text class="ea" x="8" y="80">Prenom_Enseignant</text>
+  <text class="ea" x="8" y="98">Grade_Enseignant</text>
+  <text class="ea" x="8" y="116">Statut_Enseignant</text>
+  <text class="ea" x="8" y="134">Departement_Enseignant</text>
+  <text class="ea" x="8" y="152">Taux_horaire_Enseignant</text>
+  <text class="ea" x="8" y="170">Contact_Enseignant</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : RESSOURCE  x=475 y=375 w=200 h=120
+════════════════════════════════════════════════ -->
+<g transform="translate(475,375)">
+  <rect class="eb" width="200" height="120" rx="3"/>
+  <rect class="eh" width="200" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="200" y2="28"/>
+  <text class="et" x="100" y="19">RESSOURCE</text>
+  <text class="eu" x="8" y="44">ID_Ressource</text>
+  <text class="ea" x="8" y="62">Type_contenu_Ressource</text>
+  <text class="ea" x="8" y="80">Niveau_complexite_Ress.</text>
+  <text class="ea" x="8" y="98">Date_creation_Ressource</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ENTITÉ : ACTIVITE_PEDAGOGIQUE  x=960 y=375 w=250 h=178
+════════════════════════════════════════════════ -->
+<g transform="translate(960,375)">
+  <rect class="eb" width="250" height="178" rx="3"/>
+  <rect class="eh" width="250" height="28"  rx="3"/>
+  <line class="sep" x1="0" y1="28" x2="250" y2="28"/>
+  <text class="et" x="125" y="19">ACTIVITE_PEDAGOGIQUE</text>
+  <text class="eu" x="8" y="44">ID_Activite_pedagogique</text>
+  <text class="ea" x="8" y="62">Type_activite_Activite</text>
+  <text class="ea" x="8" y="80">Nombre_sequences_Activite</text>
+  <text class="ea" x="8" y="98">Volume_horaire_calcule</text>
+  <text class="ea" x="8" y="116">Statut_validation_Activite</text>
+  <text class="ea" x="8" y="134">Date_validation_Activite</text>
+  <text class="ea" x="8" y="152">Cree_a_Activite</text>
+</g>
+
+<!-- ═══════════════════════════════════════════════
+     ASSOCIATIONS  (ellipses cyan)
+════════════════════════════════════════════════ -->
+<!-- APPARTENIR: cx=120 cy=305 -->
+<ellipse class="ae" cx="120" cy="305" rx="52" ry="23"/>
+<text  class="at" x="120" y="305">APPARTENIR</text>
+
+<!-- CONTIENT: cx=575 cy=298 -->
+<ellipse class="ae" cx="575" cy="298" rx="46" ry="23"/>
+<text  class="at" x="575" y="298">CONTIENT</text>
+
+<!-- PRODUIT: cx=350 cy=468 -->
+<ellipse class="ae" cx="350" cy="468" rx="50" ry="23"/>
+<text  class="at" x="350" y="468">PRODUIT</text>
+
+<!-- CONCERNE: cx=810 cy=445 -->
+<ellipse class="ae" cx="810" cy="445" rx="50" ry="23"/>
+<text  class="at" x="810" y="445">CONCERNE</text>
+
+<!-- REGROUPE: cx=1100 cy=295 -->
+<ellipse class="ae" cx="1100" cy="295" rx="52" ry="23"/>
+<text  class="at" x="1100" y="295">REGROUPE</text>
+
+<!-- VALIDE: cx=640 cy=605 -->
+<ellipse class="ae" cx="640" cy="605" rx="46" ry="23"/>
+<text  class="at" x="640" y="605">VALIDE</text>
+
+<!-- ═══════════════════════════════════════════════
+     LÉGENDE
+════════════════════════════════════════════════ -->
+<rect x="20" y="660" width="16" height="14" fill="#FFFF99" stroke="#CC8800" stroke-width="1.5" rx="2"/>
+<text x="42" y="672" font="11px Arial" font-size="11" fill="#444">Entité</text>
+
+<ellipse cx="108" cy="667" rx="22" ry="11" fill="#00CCCC" stroke="#006666" stroke-width="1.5"/>
+<text x="136" y="672" font-size="11" fill="#444">Association</text>
+
+<text x="260" y="672" font-size="11" fill="#CC0000" font-weight="bold">0,n</text>
+<text x="278" y="672" font-size="11" fill="#444">Cardinalité</text>
+
+<text x="20"  y="695" font-size="10" fill="#888">* Les attributs soulignés constituent la clé primaire (identifiant) de l'entité.</text>
+</svg></div>
+<p>Le MCD met en évidence l'entité centrale <code>ACTIVITE_PEDAGOGIQUE</code> liée aux <code>ENSEIGNANT</code>, aux <code>RESSOURCE</code>, aux <code>ANNEE_ACADEMIQUE</code> et aux <code>UTILISATEUR</code> (validateurs).</p>
+<h4>2. Modèle Conceptuel de Traitement (MCT)</h4>
+<p><strong>a. Diagramme des flux</strong></p>
+<div class="svg-container"><svg width="800" height="300">
+<defs>
+  <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0,8 3,0 6" fill="#34495E"/>
+  </marker>
+  <style>
+    .act { fill:#ECF0F1; stroke:#2C3E50; stroke-width:2; rx:5; }
+    .sys { fill:#FDEBD0; stroke:#E67E22; stroke-width:2; rx:5; }
+    .txt { font-family:Arial; font-size:12px; font-weight:bold; fill:#2C3E50; text-anchor:middle; }
+    .flx { font-family:Arial; font-size:11px; fill:#34495E; text-anchor:middle; }
+    .lin { stroke:#34495E; stroke-width:1.5; fill:none; marker-end:url(#arr); }
+  </style>
+</defs>
+
+<!-- Acteurs -->
+<rect class="act" x="50"  y="110" width="140" height="60"/>
+<text class="txt" x="120" y="145">ENSEIGNANT</text>
+
+<rect class="sys" x="330" y="100" width="140" height="80"/>
+<text class="txt" x="400" y="135">SYSTÈME UVCI</text>
+<text class="flx" x="400" y="155" font-size="10">(Application)</text>
+
+<rect class="act" x="610" y="110" width="140" height="60"/>
+<text class="txt" x="680" y="145">ADMINISTRATION</text>
+
+<!-- Flux Enseignant <-> Système -->
+<path class="lin" d="M 190 120 Q 260 90 330 120"/>
+<text class="flx" x="260" y="100">1. Déclaration d'activité</text>
+
+<path class="lin" d="M 330 160 Q 260 190 190 160"/>
+<text class="flx" x="260" y="195">4. Notification de statut</text>
+
+<!-- Flux Système <-> Administration -->
+<path class="lin" d="M 470 120 Q 540 90 610 120"/>
+<text class="flx" x="540" y="100">2. Alertes à valider</text>
+
+<path class="lin" d="M 610 140 Q 540 140 470 140"/>
+<text class="flx" x="540" y="135">3. Décision de validation</text>
+
+<path class="lin" d="M 610 160 Q 540 190 470 160"/>
+<text class="flx" x="540" y="195">5. Demande d'états de paiement</text>
+
+<path class="lin" d="M 470 175 Q 540 220 610 175"/>
+<text class="flx" x="540" y="215">6. Fichier d'export généré</text>
+
+</svg>
+Le diagramme met en évidence les 6 flux d'informations principaux entre l'Enseignant, l'Administration et le Système (de la déclaration à l'export du fichier de paiement).
+
+**b. Graphe d’ordonnancement des flux**
+</div>
+<p></svg>
+L'enchaînement logique suit cet ordre : 1. Déclaration → 2. Alerte → 3. Décision → 4. Notification → 5. Demande d'export → 6. Fourniture du fichier.</p>
+<p><strong>c. Schéma d’enchaînement des opérations</strong></p>
+<div class="svg-container"><svg width="620" height="50">
+  <ellipse cx="70"  cy="25" rx="60" ry="18" fill="#AACCFF" stroke="#0055AA" stroke-width="1.5"/>
+  <text x="70"  y="29" text-anchor="middle" font-size="11" font-family="Arial">Événement</text>
+  <rect x="145" y="8" width="110" height="34" fill="#FFFF99" stroke="#CC8800" stroke-width="1.5" rx="3"/>
+  <text x="200" y="29" text-anchor="middle" font-size="11" font-family="Arial">Opération</text>
+  <ellipse cx="340" cy="25" rx="80" ry="18" fill="#BBEECC" stroke="#007700" stroke-width="1.5"/>
+  <text x="340" y="29" text-anchor="middle" font-size="11" font-family="Arial">Résultat positif</text>
+  <ellipse cx="510" cy="25" rx="80" ry="18" fill="#FFBBBB" stroke="#AA0000" stroke-width="1.5"/>
+  <text x="510" y="29" text-anchor="middle" font-size="11" font-family="Arial">Résultat négatif</text>
+</svg><br><svg width="620" height="550">
+<defs>
+  <marker id="a1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0,8 3,0 6" fill="#555"/>
+  </marker>
+</defs>
+
+<!-- Events -->
+<ellipse cx="170" cy="42" rx="155" ry="26" fill="#AACCFF" stroke="#0055AA" stroke-width="2"/>
+<text x="170" y="39" text-anchor="middle" font-size="12" font-family="Arial" font-weight="bold">Enseignant authentifié</text>
+<text x="170" y="54" text-anchor="middle" font-size="10" font-family="Arial" fill="#333">(Déclencheur 1)</text>
+
+<ellipse cx="450" cy="42" rx="155" ry="26" fill="#AACCFF" stroke="#0055AA" stroke-width="2"/>
+<text x="450" y="39" text-anchor="middle" font-size="12" font-family="Arial" font-weight="bold">Formulaire d'activité soumis</text>
+<text x="450" y="54" text-anchor="middle" font-size="10" font-family="Arial" fill="#333">(Déclencheur 2)</text>
+
+<!-- Arrows events → op box -->
+<line x1="200" y1="68" x2="295" y2="98" stroke="#555" stroke-width="1.5" marker-end="url(#a1)"/>
+<line x1="420" y1="68" x2="325" y2="98" stroke="#555" stroke-width="1.5" marker-end="url(#a1)"/>
+
+<!-- Operation box -->
+<rect x="20" y="100" width="580" height="330" fill="#FFFF99" stroke="#CC8800" stroke-width="2" rx="4"/>
+<rect x="20" y="100" width="580" height="30"  fill="#FFD700" stroke="#CC8800" stroke-width="2" rx="4"/>
+<text x="310" y="120" text-anchor="middle" font-size="13" font-family="Arial" font-weight="bold" fill="#333">
+  Opération : Enregistrement de l'activité pédagogique
+</text>
+<line x1="20" y1="130" x2="600" y2="130" stroke="#CC8800" stroke-width="1"/>
+
+<!-- Steps -->
+<text x="40" y="155" font-size="11" font-family="Arial" fill="#333">1.  Vérification de l'existence de l'enseignant dans le système</text>
+<line x1="50" y1="162" x2="50" y2="174" stroke="#555" stroke-width="1.2" marker-end="url(#a1)"/>
+<text x="40" y="192" font-size="11" font-family="Arial" fill="#333">2.  Vérification de l'existence du cours dans le référentiel</text>
+<line x1="50" y1="199" x2="50" y2="211" stroke="#555" stroke-width="1.2" marker-end="url(#a1)"/>
+<text x="40" y="229" font-size="11" font-family="Arial" fill="#333">3.  Récupération du coefficient selon le type et le niveau de complexité</text>
+<line x1="50" y1="236" x2="50" y2="248" stroke="#555" stroke-width="1.2" marker-end="url(#a1)"/>
+<text x="40" y="266" font-size="11" font-family="Arial" fill="#333">4.  Calcul automatique du volume horaire  =  nombre de séquences  x  coefficient</text>
+<line x1="50" y1="273" x2="50" y2="285" stroke="#555" stroke-width="1.2" marker-end="url(#a1)"/>
+<text x="40" y="303" font-size="11" font-family="Arial" fill="#333">5.  Création de la ressource pédagogique associée au cours</text>
+<line x1="50" y1="310" x2="50" y2="322" stroke="#555" stroke-width="1.2" marker-end="url(#a1)"/>
+<text x="40" y="340" font-size="11" font-family="Arial" fill="#333">6.  Enregistrement de l'activité avec le statut initial : En attente de validation</text>
+<line x1="50" y1="347" x2="50" y2="359" stroke="#555" stroke-width="1.2" marker-end="url(#a1)"/>
+<text x="40" y="377" font-size="11" font-family="Arial" fill="#333">7.  Notification au responsable de validation</text>
+
+<!-- Arrows op box → results -->
+<line x1="200" y1="430" x2="170" y2="468" stroke="#555" stroke-width="1.5" marker-end="url(#a1)"/>
+<line x1="420" y1="430" x2="450" y2="468" stroke="#555" stroke-width="1.5" marker-end="url(#a1)"/>
+
+<!-- Results -->
+<ellipse cx="170" cy="500" rx="158" ry="28" fill="#BBEECC" stroke="#007700" stroke-width="2"/>
+<text x="170" y="497" text-anchor="middle" font-size="11" font-family="Arial" font-weight="bold">Activité créée</text>
+<text x="170" y="512" text-anchor="middle" font-size="10" font-family="Arial">En attente de validation</text>
+
+<ellipse cx="450" cy="500" rx="158" ry="28" fill="#FFBBBB" stroke="#AA0000" stroke-width="2"/>
+<text x="450" y="497" text-anchor="middle" font-size="11" font-family="Arial" font-weight="bold">Erreur signalée</text>
+<text x="450" y="512" text-anchor="middle" font-size="10" font-family="Arial">Données invalides ou incomplètes</text>
+</svg><br><svg width="620" height="470">
+<defs>
+  <marker id="a2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0,8 3,0 6" fill="#555"/>
+  </marker>
+</defs>
+
+<!-- Events -->
+<ellipse cx="170" cy="42" rx="155" ry="26" fill="#AACCFF" stroke="#0055AA" stroke-width="2"/>
+<text x="170" y="39" text-anchor="middle" font-size="12" font-family="Arial" font-weight="bold">Activité au statut En attente</text>
+<text x="170" y="54" text-anchor="middle" font-size="10" font-family="Arial" fill="#333">(Déclencheur 1)</text>
+
+<ellipse cx="450" cy="42" rx="155" ry="26" fill="#AACCFF" stroke="#0055AA" stroke-width="2"/>
+<text x="450" y="39" text-anchor="middle" font-size="12" font-family="Arial" font-weight="bold">Décision prise par le validateur</text>
+<text x="450" y="54" text-anchor="middle" font-size="10" font-family="Arial" fill="#333">(Déclencheur 2)</text>
+
+<!-- Arrows events → op box -->
+<line x1="200" y1="68" x2="295" y2="98" stroke="#555" stroke-width="1.5" marker-end="url(#a2)"/>
+<line x1="420" y1="68" x2="325" y2="98" stroke="#555" stroke-width="1.5" marker-end="url(#a2)"/>
+
+<!-- Operation box -->
+<rect x="20" y="100" width="580" height="245" fill="#FFFF99" stroke="#CC8800" stroke-width="2" rx="4"/>
+<rect x="20" y="100" width="580" height="30"  fill="#FFD700" stroke="#CC8800" stroke-width="2" rx="4"/>
+<text x="310" y="120" text-anchor="middle" font-size="13" font-family="Arial" font-weight="bold" fill="#333">
+  Opération : Validation de l'activité pédagogique
+</text>
+<line x1="20" y1="130" x2="600" y2="130" stroke="#CC8800" stroke-width="1"/>
+
+<!-- Steps -->
+<text x="40" y="155" font-size="11" font-family="Arial" fill="#333">1.  Consultation de la liste des activités en attente de validation</text>
+<line x1="50" y1="162" x2="50" y2="174" stroke="#555" stroke-width="1.2" marker-end="url(#a2)"/>
+<text x="40" y="192" font-size="11" font-family="Arial" fill="#333">2.  Examen du détail de l'activité sélectionnée (enseignant, cours, volume horaire)</text>
+<line x1="50" y1="199" x2="50" y2="211" stroke="#555" stroke-width="1.2" marker-end="url(#a2)"/>
+<text x="40" y="229" font-size="11" font-family="Arial" fill="#333">3.  Mise à jour du statut de l'activité : Validée ou Rejetée</text>
+<line x1="50" y1="236" x2="50" y2="248" stroke="#555" stroke-width="1.2" marker-end="url(#a2)"/>
+<text x="40" y="266" font-size="11" font-family="Arial" fill="#333">4.  Enregistrement de la date de décision et de l'identifiant du validateur</text>
+<line x1="50" y1="273" x2="50" y2="285" stroke="#555" stroke-width="1.2" marker-end="url(#a2)"/>
+<text x="40" y="303" font-size="11" font-family="Arial" fill="#333">5.  Mise à jour du tableau de bord des activités traitées</text>
+
+<!-- Arrows op box → results -->
+<line x1="200" y1="345" x2="170" y2="385" stroke="#555" stroke-width="1.5" marker-end="url(#a2)"/>
+<line x1="420" y1="345" x2="450" y2="385" stroke="#555" stroke-width="1.5" marker-end="url(#a2)"/>
+
+<!-- Results -->
+<ellipse cx="170" cy="418" rx="158" ry="28" fill="#BBEECC" stroke="#007700" stroke-width="2"/>
+<text x="170" y="415" text-anchor="middle" font-size="11" font-family="Arial" font-weight="bold">Activité validée</text>
+<text x="170" y="430" text-anchor="middle" font-size="10" font-family="Arial">Volume horaire comptabilisé</text>
+
+<ellipse cx="450" cy="418" rx="158" ry="28" fill="#FFBBBB" stroke="#AA0000" stroke-width="2"/>
+<text x="450" y="415" text-anchor="middle" font-size="11" font-family="Arial" font-weight="bold">Activité rejetée</text>
+<text x="450" y="430" text-anchor="middle" font-size="10" font-family="Arial">Non comptabilisée</text>
+</svg><br><svg width="620" height="590">
+<defs>
+  <marker id="a3" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0,8 3,0 6" fill="#555"/>
+  </marker>
+</defs>
+
+<!-- Event (single) -->
+<ellipse cx="310" cy="42" rx="280" ry="26" fill="#AACCFF" stroke="#0055AA" stroke-width="2"/>
+<text x="310" y="46" text-anchor="middle" font-size="12" font-family="Arial" font-weight="bold">
+  Demande d'export pour une année académique
+</text>
+
+<!-- Arrow event → op box -->
+<line x1="310" y1="68" x2="310" y2="98" stroke="#555" stroke-width="1.5" marker-end="url(#a3)"/>
+
+<!-- Operation box -->
+<rect x="20" y="100" width="580" height="375" fill="#FFFF99" stroke="#CC8800" stroke-width="2" rx="4"/>
+<rect x="20" y="100" width="580" height="30"  fill="#FFD700" stroke="#CC8800" stroke-width="2" rx="4"/>
+<text x="310" y="120" text-anchor="middle" font-size="13" font-family="Arial" font-weight="bold" fill="#333">
+  Opération : Calcul de la rémunération et génération de l'export
+</text>
+<line x1="20" y1="130" x2="600" y2="130" stroke="#CC8800" stroke-width="1"/>
+
+<!-- Steps -->
+<text x="40" y="155" font-size="11" font-family="Arial" fill="#333">1.  Sélection de toutes les activités au statut Validé pour l'année demandée</text>
+<line x1="50" y1="162" x2="50" y2="174" stroke="#555" stroke-width="1.2" marker-end="url(#a3)"/>
+<text x="40" y="192" font-size="11" font-family="Arial" fill="#333">2.  Regroupement des activités par enseignant</text>
+<line x1="50" y1="199" x2="50" y2="211" stroke="#555" stroke-width="1.2" marker-end="url(#a3)"/>
+<text x="40" y="229" font-size="11" font-family="Arial" fill="#333">3.  Calcul du volume horaire total validé par enseignant</text>
+<line x1="50" y1="236" x2="50" y2="248" stroke="#555" stroke-width="1.2" marker-end="url(#a3)"/>
+<text x="40" y="266" font-size="11" font-family="Arial" fill="#333">4.  Récupération du quota statutaire selon le grade et le statut de l'enseignant</text>
+<line x1="50" y1="273" x2="50" y2="285" stroke="#555" stroke-width="1.2" marker-end="url(#a3)"/>
+<text x="40" y="303" font-size="11" font-family="Arial" fill="#333">5.  Calcul des heures supplémentaires  =  Volume total validé  -  Quota statutaire</text>
+<line x1="50" y1="310" x2="50" y2="322" stroke="#555" stroke-width="1.2" marker-end="url(#a3)"/>
+<text x="40" y="340" font-size="11" font-family="Arial" fill="#333">6.  Calcul de la rémunération  =  Heures supplémentaires  x  Taux horaire</text>
+<line x1="50" y1="347" x2="50" y2="359" stroke="#555" stroke-width="1.2" marker-end="url(#a3)"/>
+<text x="40" y="377" font-size="11" font-family="Arial" fill="#333">7.  Génération et mise à disposition du fichier Excel récapitulatif</text>
+<line x1="50" y1="384" x2="50" y2="396" stroke="#555" stroke-width="1.2" marker-end="url(#a3)"/>
+<text x="40" y="414" font-size="11" font-family="Arial" fill="#333">8.  Archivage de la demande d'export dans le journal du système</text>
+
+<!-- Arrows op box → results -->
+<line x1="200" y1="475" x2="170" y2="515" stroke="#555" stroke-width="1.5" marker-end="url(#a3)"/>
+<line x1="420" y1="475" x2="450" y2="515" stroke="#555" stroke-width="1.5" marker-end="url(#a3)"/>
+
+<!-- Results -->
+<ellipse cx="170" cy="548" rx="158" ry="28" fill="#BBEECC" stroke="#007700" stroke-width="2"/>
+<text x="170" y="545" text-anchor="middle" font-size="11" font-family="Arial" font-weight="bold">Fichier d'état de paiement généré</text>
+<text x="170" y="560" text-anchor="middle" font-size="10" font-family="Arial">Disponible au téléchargement</text>
+
+<ellipse cx="450" cy="548" rx="158" ry="28" fill="#FFBBBB" stroke="#AA0000" stroke-width="2"/>
+<text x="450" y="545" text-anchor="middle" font-size="11" font-family="Arial" font-weight="bold">Export impossible</text>
+<text x="450" y="560" text-anchor="middle" font-size="10" font-family="Arial">Aucune activité validée trouvée</text>
+</svg></div>
+<p>Les 3 opérations majeures modélisées sont : l'enregistrement de l'activité, la validation par l'administration, et le calcul de la rémunération.</p>
+<h3>II. Niveau organisationnel et logique</h3>
+<h4>1. Modèle Logique de Données (MLD)</h4>
+<div class="svg-container"><svg width="1260" height="840" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="fk" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0,8 3,0 6" fill="#1a5276"/>
+  </marker>
+  <style>
+    .th { fill:#1a5276; }
+    .tb { fill:#EEF4FB; stroke:#2C5F8A; stroke-width:1.8; }
+    .tn { font:bold 12px Arial; fill:#fff; text-anchor:middle; }
+    .pk { font:bold 11px Arial; fill:#7D2D00; text-anchor:start; text-decoration:underline; }
+    .fk { font:italic 11px Arial; fill:#1a5276; text-anchor:start; }
+    .at { font:11px Arial; fill:#222; text-anchor:start; }
+    .lg { font:10px Arial; fill:#555; }
+    .cl { stroke:#1a5276; stroke-width:1.5; fill:none; marker-end:url(#fk); stroke-dasharray:5,3; }
+  </style>
+</defs>
+
+<!-- ═══ CONNEXIONS FK (dessinées en premier) ══════════════════════ -->
+<!-- 1. ENSEIGNANT.utilisateur_id → UTILISATEUR.id  (vertical) -->
+<line class="cl" x1="132" y1="280" x2="132" y2="218"/>
+
+<!-- 2. RESSOURCE.cours_id → COURS.id  (vertical) -->
+<line class="cl" x1="627" y1="280" x2="627" y2="218"/>
+
+<!-- 3. RESSOURCE.enseignant_id → ENSEIGNANT.id  (horizontal) -->
+<line class="cl" x1="510" y1="355" x2="252" y2="355"/>
+
+<!-- 4. ACTIVITE.ressource_id → RESSOURCE.id  (horizontal) -->
+<line class="cl" x1="895" y1="370" x2="748" y2="340"/>
+
+<!-- 5. ACTIVITE.enseignant_id → ENSEIGNANT.id  (long horizontal) -->
+<line class="cl" x1="895" y1="415" x2="252" y2="400"/>
+
+<!-- 6. ACTIVITE.annee_id → ANNEE_ACADEMIQUE.id  (vertical) -->
+<line class="cl" x1="1075" y1="280" x2="1075" y2="173"/>
+
+<!-- 7. ACTIVITE.valide_par → UTILISATEUR.id  (route par le haut) -->
+<polyline class="cl" points="1240,290 1250,290 1250,8 15,8 15,120 18,120"/>
+
+<!-- ═══ TABLE : UTILISATEUR  x=18 y=20 w=235 h=198 ═════════════ -->
+<rect class="tb" x="18" y="20" width="235" height="198" rx="3"/>
+<rect class="th" x="18" y="20" width="235" height="30"  rx="3"/>
+<text class="tn" x="136" y="40">UTILISATEUR</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="18" y1="50" x2="253" y2="50"/>
+<text class="pk" x="28" y="68">PK  id</text>
+<text class="at" x="28" y="88">     email</text>
+<text class="at" x="28" y="108">     mot_de_passe_hache</text>
+<text class="at" x="28" y="128">     role</text>
+<text class="at" x="28" y="148">     est_actif</text>
+<text class="at" x="28" y="168">     encodage_facial</text>
+<text class="at" x="28" y="188">     cree_a</text>
+
+<!-- ═══ TABLE : COURS  x=512 y=20 w=235 h=198 ══════════════════ -->
+<rect class="tb" x="512" y="20" width="235" height="198" rx="3"/>
+<rect class="th" x="512" y="20" width="235" height="30"  rx="3"/>
+<text class="tn" x="630" y="40">COURS</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="512" y1="50" x2="747" y2="50"/>
+<text class="pk" x="522" y="68">PK  id</text>
+<text class="at" x="522" y="88">     intitule</text>
+<text class="at" x="522" y="108">     filiere</text>
+<text class="at" x="522" y="128">     niveau</text>
+<text class="at" x="522" y="148">     semestre</text>
+<text class="at" x="522" y="168">     nb_heures</text>
+<text class="at" x="522" y="188">     nb_credits</text>
+
+<!-- ═══ TABLE : ANNEE_ACADEMIQUE  x=895 y=20 w=345 h=155 ════════ -->
+<rect class="tb" x="895" y="20" width="345" height="155" rx="3"/>
+<rect class="th" x="895" y="20" width="345" height="30"  rx="3"/>
+<text class="tn" x="1068" y="40">ANNEE_ACADEMIQUE</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="895" y1="50" x2="1240" y2="50"/>
+<text class="pk" x="905" y="68">PK  id</text>
+<text class="at" x="905" y="88">     libelle</text>
+<text class="at" x="905" y="108">     date_debut</text>
+<text class="at" x="905" y="128">     date_fin</text>
+<text class="at" x="905" y="148">     est_active</text>
+
+<!-- ═══ TABLE : ENSEIGNANT  x=18 y=280 w=235 h=262 ═════════════ -->
+<rect class="tb" x="18" y="280" width="235" height="262" rx="3"/>
+<rect class="th" x="18" y="280" width="235" height="30"  rx="3"/>
+<text class="tn" x="136" y="300">ENSEIGNANT</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="18" y1="310" x2="253" y2="310"/>
+<text class="pk" x="28" y="328">PK  id</text>
+<text class="at" x="28" y="348">     nom</text>
+<text class="at" x="28" y="368">     prenom</text>
+<text class="at" x="28" y="388">     grade</text>
+<text class="at" x="28" y="408">     statut</text>
+<text class="at" x="28" y="428">     departement</text>
+<text class="at" x="28" y="448">     taux_horaire</text>
+<text class="at" x="28" y="468">     email</text>
+<text class="at" x="28" y="488">     telephone</text>
+<text class="fk" x="28" y="508">FK  utilisateur_id  →  UTILISATEUR.id</text>
+
+<!-- ═══ TABLE : RESSOURCE  x=512 y=280 w=235 h=174 ═════════════ -->
+<rect class="tb" x="512" y="280" width="235" height="174" rx="3"/>
+<rect class="th" x="512" y="280" width="235" height="30"  rx="3"/>
+<text class="tn" x="630" y="300">RESSOURCE</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="512" y1="310" x2="747" y2="310"/>
+<text class="pk" x="522" y="328">PK  id</text>
+<text class="at" x="522" y="348">     type_contenu</text>
+<text class="at" x="522" y="368">     niveau_complexite</text>
+<text class="at" x="522" y="388">     date_creation</text>
+<text class="fk" x="522" y="408">FK  cours_id  →  COURS.id</text>
+<text class="fk" x="522" y="428">FK  enseignant_id  →  ENSEIGNANT.id</text>
+
+<!-- ═══ TABLE : ACTIVITE_PEDAGOGIQUE  x=895 y=280 w=345 h=308 ═══ -->
+<rect class="tb" x="895" y="280" width="345" height="308" rx="3"/>
+<rect class="th" x="895" y="280" width="345" height="30"  rx="3"/>
+<text class="tn" x="1068" y="300">ACTIVITE_PEDAGOGIQUE</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="895" y1="310" x2="1240" y2="310"/>
+<text class="pk" x="905" y="328">PK  id</text>
+<text class="at" x="905" y="348">     type_activite</text>
+<text class="at" x="905" y="368">     nb_sequences</text>
+<text class="at" x="905" y="388">     volume_horaire_calcule</text>
+<text class="at" x="905" y="408">     annee_academique</text>
+<text class="at" x="905" y="428">     statut_validation</text>
+<text class="at" x="905" y="448">     valide_le</text>
+<text class="at" x="905" y="468">     cree_a</text>
+<text class="fk" x="905" y="488">FK  ressource_id  →  RESSOURCE.id</text>
+<text class="fk" x="905" y="508">FK  enseignant_id  →  ENSEIGNANT.id</text>
+<text class="fk" x="905" y="528">FK  annee_id  →  ANNEE_ACADEMIQUE.id</text>
+<text class="fk" x="905" y="548">FK  valide_par  →  UTILISATEUR.id</text>
+
+<!-- ═══ TABLE : CONFIGURATION_COEFFICIENT  x=175 y=620 w=290 h=130 -->
+<rect class="tb" x="175" y="620" width="295" height="130" rx="3"/>
+<rect class="th" x="175" y="620" width="295" height="30"  rx="3"/>
+<text class="tn" x="323" y="640">CONFIGURATION_COEFFICIENT</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="175" y1="650" x2="470" y2="650"/>
+<text class="pk" x="185" y="668">PK  id</text>
+<text class="at" x="185" y="688">     niveau_complexite</text>
+<text class="at" x="185" y="708">     type_activite</text>
+<text class="at" x="185" y="728">     coefficient</text>
+<text class="lg" x="185" y="745">UNIQUE (niveau_complexite, type_activite)</text>
+
+<!-- ═══ TABLE : QUOTA_STATUTAIRE  x=660 y=620 w=270 h=130 ════════ -->
+<rect class="tb" x="660" y="620" width="270" height="130" rx="3"/>
+<rect class="th" x="660" y="620" width="270" height="30"  rx="3"/>
+<text class="tn" x="795" y="640">QUOTA_STATUTAIRE</text>
+<line stroke="#2C5F8A" stroke-width="1" x1="660" y1="650" x2="930" y2="650"/>
+<text class="pk" x="670" y="668">PK  id</text>
+<text class="at" x="670" y="688">     grade</text>
+<text class="at" x="670" y="708">     statut</text>
+<text class="at" x="670" y="728">     nb_heures_quota</text>
+<text class="lg" x="670" y="745">UNIQUE (grade, statut)</text>
+
+<!-- ═══ LÉGENDE ══════════════════════════════════════════════════ -->
+<rect x="18" y="795" width="14" height="14" fill="#1a5276" rx="2"/>
+<text x="38" y="806" font-size="11" font-family="Arial" fill="#444">En-tête de table</text>
+<text x="170" y="806" font-size="11" font-family="Arial" fill="#7D2D00" font-weight="bold" text-decoration="underline">PK</text>
+<text x="190" y="806" font-size="11" font-family="Arial" fill="#444">Clé primaire (soulignée)</text>
+<text x="370" y="806" font-size="11" font-family="Arial" fill="#1a5276" font-style="italic">FK</text>
+<text x="390" y="806" font-size="11" font-family="Arial" fill="#444">Clé étrangère</text>
+<line x1="490" y1="800" x2="530" y2="800" stroke="#1a5276" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#fk)"/>
+<text x="540" y="806" font-size="11" font-family="Arial" fill="#444">Relation de référence</text>
+</svg></div>
+<p>Le MLD traduit le MCD en relations. Les clés primaires migrent en tant que clés étrangères (notées FK) pour traduire les associations. Par exemple, la table <code>activities</code> contient les clés étrangères <code>teacher_id</code> et <code>resource_id</code>.</p>
+<h4>2. Modèle Organisationnel de Données (MOT)</h4>
+<p>Le MOT précise que la déclaration d'activité est une tâche faite <em>au fil de l'eau</em> de manière <em>interactive</em>, la validation se fait de manière <em>journalière</em> ou <em>périodique</em>, et l'export des états de paiement est un processus <em>batch</em> exécuté de manière <em>automatique</em> en <em>fin d'année</em>.</p>
+<h3>III. Niveau physique (Construction du modèle physique de donnée)</h3>
+<div class="sql-code">
+
+<!-- ─── TABLE : UTILISATEUR ──────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">Table UTILISATEUR <span>Gestion des comptes d'accès</span></div>
+  <pre><span class="kw">CREATE TABLE</span> utilisateurs (
+    id                  <span class="tp">INTEGER</span>       <span class="kw">PRIMARY KEY AUTOINCREMENT</span>,
+    email               <span class="tp">VARCHAR(255)</span>  <span class="kw">NOT NULL UNIQUE</span>,
+    hashed_password     <span class="tp">VARCHAR(255)</span>  <span class="kw">NOT NULL</span>,
+    role                <span class="tp">VARCHAR(20)</span>   <span class="kw">NOT NULL DEFAULT</span> <span class="st">'teacher'</span>,
+                                        <span class="cm">-- Valeurs : admin | secretary | teacher</span>
+    est_actif           <span class="tp">BOOLEAN</span>       <span class="kw">NOT NULL DEFAULT</span> <span class="nm">1</span>,
+    face_encoding       <span class="tp">TEXT</span>              <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+    created_at          <span class="tp">DATETIME</span>          <span class="kw">DEFAULT</span> (datetime(<span class="st">'now'</span>))
+);</pre>
+</div>
+
+<!-- ─── TABLE : ENSEIGNANT ───────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">Table ENSEIGNANT <span>Informations et paramètres de rémunération</span></div>
+  <pre><span class="kw">CREATE TABLE</span> teachers (
+    id              <span class="tp">INTEGER</span>       <span class="kw">PRIMARY KEY AUTOINCREMENT</span>,
+    nom             <span class="tp">VARCHAR(100)</span>  <span class="kw">NOT NULL</span>,
+    prenom          <span class="tp">VARCHAR(100)</span>  <span class="kw">NOT NULL</span>,
+    grade           <span class="tp">VARCHAR(50)</span>   <span class="kw">NOT NULL</span>,
+    statut          <span class="tp">VARCHAR(20)</span>   <span class="kw">NOT NULL</span>,
+                                    <span class="cm">-- Valeurs : Permanent | Vacataire</span>
+    departement     <span class="tp">VARCHAR(100)</span>  <span class="kw">NOT NULL</span>,
+    taux_horaire    <span class="tp">REAL</span>              <span class="kw">DEFAULT</span> <span class="nm">0.0</span>,
+    email           <span class="tp">VARCHAR(255)</span>  <span class="kw">NOT NULL UNIQUE</span>,
+    telephone       <span class="tp">VARCHAR(20)</span>       <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+    user_id         <span class="tp">INTEGER</span>           <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+
+    <span class="kw">CONSTRAINT</span> fk_teacher_user
+        <span class="kw">FOREIGN KEY</span> (user_id)
+        <span class="kw">REFERENCES</span> utilisateurs(id)
+);</pre>
+</div>
+
+<!-- ─── TABLE : COURS ────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">Table COURS <span>Référentiel des unités d'enseignement</span></div>
+  <pre><span class="kw">CREATE TABLE</span> courses (
+    id          <span class="tp">INTEGER</span>       <span class="kw">PRIMARY KEY AUTOINCREMENT</span>,
+    intitule    <span class="tp">VARCHAR(200)</span>  <span class="kw">NOT NULL</span>,
+    filiere     <span class="tp">VARCHAR(100)</span>  <span class="kw">NOT NULL</span>,
+    niveau      <span class="tp">VARCHAR(5)</span>    <span class="kw">NOT NULL</span>,
+                                <span class="cm">-- Valeurs : L1 | L2 | L3 | M1 | M2</span>
+    semestre    <span class="tp">VARCHAR(10)</span>   <span class="kw">NOT NULL</span>,
+    nb_heures   <span class="tp">INTEGER</span>           <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+    nb_credits  <span class="tp">INTEGER</span>           <span class="kw">DEFAULT</span> <span class="kw">NULL</span>
+);</pre>
+</div>
+
+<!-- ─── TABLE : RESSOURCE ────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">Table RESSOURCE <span>Ressources pédagogiques numériques</span></div>
+  <pre><span class="kw">CREATE TABLE</span> resources (
+    id                   <span class="tp">INTEGER</span>      <span class="kw">PRIMARY KEY AUTOINCREMENT</span>,
+    type                 <span class="tp">VARCHAR(50)</span>  <span class="kw">NOT NULL</span>,
+                                       <span class="cm">-- Valeurs : video | quiz | document | activite_interactive</span>
+    niveau_complexite    <span class="tp">INTEGER</span>          <span class="kw">DEFAULT</span> <span class="nm">1</span>,
+                                       <span class="cm">-- Valeurs : 1 | 2 | 3</span>
+    date_creation        <span class="tp">DATETIME</span>         <span class="kw">DEFAULT</span> (datetime(<span class="st">'now'</span>)),
+    course_id            <span class="tp">INTEGER</span>      <span class="kw">NOT NULL</span>,
+    teacher_id           <span class="tp">INTEGER</span>      <span class="kw">NOT NULL</span>,
+
+    <span class="kw">CONSTRAINT</span> fk_resource_course
+        <span class="kw">FOREIGN KEY</span> (course_id)
+        <span class="kw">REFERENCES</span> courses(id),
+
+    <span class="kw">CONSTRAINT</span> fk_resource_teacher
+        <span class="kw">FOREIGN KEY</span> (teacher_id)
+        <span class="kw">REFERENCES</span> teachers(id)
+);</pre>
+</div>
+
+<!-- ─── TABLE : ANNEE_ACADEMIQUE ────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">Table ANNEE_ACADEMIQUE <span>Périodes de référence annuelles</span></div>
+  <pre><span class="kw">CREATE TABLE</span> academic_years (
+    id          <span class="tp">INTEGER</span>      <span class="kw">PRIMARY KEY AUTOINCREMENT</span>,
+    libelle     <span class="tp">VARCHAR(20)</span>  <span class="kw">NOT NULL</span>,
+                             <span class="cm">-- Exemple : '2024-2025'</span>
+    date_debut  <span class="tp">VARCHAR(10)</span>      <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+    date_fin    <span class="tp">VARCHAR(10)</span>      <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+    status      <span class="tp">BOOLEAN</span>          <span class="kw">DEFAULT</span> <span class="nm">0</span>
+                             <span class="cm">-- 1 = année académique active</span>
+);</pre>
+</div>
+
+<!-- ─── TABLE : ACTIVITE_PEDAGOGIQUE ────────────────────────────── -->
+<div class="section">
+  <div class="section-header">Table ACTIVITE_PEDAGOGIQUE <span>Déclarations d'heures pédagogiques</span></div>
+  <pre><span class="kw">CREATE TABLE</span> activities (
+    id                       <span class="tp">INTEGER</span>      <span class="kw">PRIMARY KEY AUTOINCREMENT</span>,
+    type                     <span class="tp">VARCHAR(20)</span>  <span class="kw">NOT NULL</span>,
+                                           <span class="cm">-- Valeurs : creation | mise_a_jour</span>
+    nb_sequences             <span class="tp">INTEGER</span>          <span class="kw">DEFAULT</span> <span class="nm">1</span>,
+    volume_horaire_calcule   <span class="tp">REAL</span>             <span class="kw">DEFAULT</span> <span class="nm">0.0</span>,
+    annee_academique         <span class="tp">VARCHAR(20)</span>      <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+    validation_status        <span class="tp">VARCHAR(20)</span>      <span class="kw">DEFAULT</span> <span class="st">'en_attente'</span>,
+                                           <span class="cm">-- Valeurs : en_attente | valide | rejetee</span>
+    validated_at             <span class="tp">DATETIME</span>         <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+    created_at               <span class="tp">DATETIME</span>         <span class="kw">DEFAULT</span> (datetime(<span class="st">'now'</span>)),
+    resource_id              <span class="tp">INTEGER</span>      <span class="kw">NOT NULL</span>,
+    teacher_id               <span class="tp">INTEGER</span>      <span class="kw">NOT NULL</span>,
+    academic_year_id         <span class="tp">INTEGER</span>          <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+    validated_by             <span class="tp">INTEGER</span>          <span class="kw">DEFAULT</span> <span class="kw">NULL</span>,
+
+    <span class="kw">CONSTRAINT</span> fk_activity_resource
+        <span class="kw">FOREIGN KEY</span> (resource_id)
+        <span class="kw">REFERENCES</span> resources(id),
+
+    <span class="kw">CONSTRAINT</span> fk_activity_teacher
+        <span class="kw">FOREIGN KEY</span> (teacher_id)
+        <span class="kw">REFERENCES</span> teachers(id),
+
+    <span class="kw">CONSTRAINT</span> fk_activity_year
+        <span class="kw">FOREIGN KEY</span> (academic_year_id)
+        <span class="kw">REFERENCES</span> academic_years(id),
+
+    <span class="kw">CONSTRAINT</span> fk_activity_validator
+        <span class="kw">FOREIGN KEY</span> (validated_by)
+        <span class="kw">REFERENCES</span> utilisateurs(id)
+);</pre>
+</div>
+
+<!-- ─── TABLE : CONFIGURATION_COEFFICIENT ───────────────────────── -->
+<div class="section">
+  <div class="section-header">Table CONFIGURATION_COEFFICIENT <span>Paramétrage des coefficients de calcul</span></div>
+  <pre><span class="kw">CREATE TABLE</span> coefficient_configs (
+    id                   <span class="tp">INTEGER</span>      <span class="kw">PRIMARY KEY AUTOINCREMENT</span>,
+    niveau_complexite    <span class="tp">INTEGER</span>      <span class="kw">NOT NULL</span>,
+                                       <span class="cm">-- Valeurs : 1 | 2 | 3</span>
+    type_activite        <span class="tp">VARCHAR(20)</span>  <span class="kw">NOT NULL</span>,
+                                       <span class="cm">-- Valeurs : creation | mise_a_jour</span>
+    coefficient          <span class="tp">REAL</span>         <span class="kw">NOT NULL</span>,
+
+    <span class="kw">CONSTRAINT</span> uq_coeff_niveau_type
+        <span class="kw">UNIQUE</span> (niveau_complexite, type_activite)
+);</pre>
+</div>
+
+<!-- ─── TABLE : QUOTA_STATUTAIRE ────────────────────────────────── -->
+<div class="section">
+  <div class="section-header">Table QUOTA_STATUTAIRE <span>Seuils horaires réglementaires par grade</span></div>
+  <pre><span class="kw">CREATE TABLE</span> quotas_statutaires (
+    id              <span class="tp">INTEGER</span>      <span class="kw">PRIMARY KEY AUTOINCREMENT</span>,
+    grade           <span class="tp">VARCHAR(50)</span>  <span class="kw">NOT NULL</span>,
+    statut          <span class="tp">VARCHAR(20)</span>  <span class="kw">NOT NULL</span>,
+                                   <span class="cm">-- Valeurs : Permanent | Vacataire</span>
+    quota_heures    <span class="tp">REAL</span>         <span class="kw">NOT NULL</span>,
+
+    <span class="kw">CONSTRAINT</span> uq_quota_grade_statut
+        <span class="kw">UNIQUE</span> (grade, statut)
+);</pre>
+</div>
+
+</div>
+<p>Le Modèle Physique de Données (MPD) a été implémenté via des scripts SQL stricts. Les types de données (VARCHAR, INTEGER, BOOLEAN, DATETIME) ont été adaptés à PostgreSQL. Les contraintes d'intégrité référentielle (<code>FOREIGN KEY</code>) et d'unicité (<code>UNIQUE</code>) ont été codées pour sécuriser la base de données.</p>
+<hr />
+<h2>CHAPITRE 4 : RÉALISATION DU PROJET</h2>
+<p>La concrétisation de l'étude analytique a abouti au développement d'une plateforme fonctionnelle, ergonomique et sécurisée.</p>
+<h3>I. Présentation de quelques fenêtres de l’application</h3>
+<p><strong>1. Page d’accueil</strong>
+<em>(Insérer la capture de l'interface frontend d'accueil)</em>
+La page d'accueil offre une navigation claire et permet aux utilisateurs de s'orienter vers leur espace dédié selon leur profil.</p>
+<p><strong>2. Page de connexion</strong>
+<em>(Insérer la capture du login)</em>
+Un système d'authentification robuste protège l'accès à la plateforme. L'accès est conditionné par le rôle de l'utilisateur stocké en base de données.</p>
+<p><strong>3. Gestion des heures des enseignants</strong>
+<em>(Insérer la capture du formulaire de déclaration)</em>
+Cette interface permet à l'enseignant de sélectionner un cours, d'indiquer le type de ressource produite et le nombre de séquences. Le système se charge de calculer automatiquement en arrière-plan le volume horaire prévisionnel.</p>
+<p><strong>4. Tableau de bord administratif</strong>
+<em>(Insérer la capture du dashboard de l'administration)</em>
+Réservé aux profils "Admin" ou "Secretary", cet écran récapitule les métriques clés (nombre d'activités en attente, volume global d'heures déclarées).</p>
+<p><strong>5. Tableau de suivi des enseignants</strong>
+<em>(Insérer la capture de la liste des activités)</em>
+Un tableau interactif permet aux validateurs de consulter, d'approuver ou de rejeter les déclarations, garantissant la fluidité du processus administratif.</p>
+<hr />
+<h2>CONCLUSION</h2>
+<p>Le projet de conception et de réalisation du "Système de gestion des heures pédagogiques des enseignants de l'UVCI" répond à un véritable besoin institutionnel de modernisation. Grâce à la rigueur de la méthode Merise, nous avons pu structurer une base de données cohérente et définir des processus métier clairs, allant de la simple déclaration d'une activité à l'automatisation complexe des états de rémunération.</p>
+<p>Le choix des technologies modernes (FastAPI et Next.js) assure à l'application des performances optimales, une maintenance facilitée et une grande évolutivité. Ce projet démontre l'importance d'une analyse préalable minutieuse pour la réussite de la digitalisation des processus administratifs en milieu universitaire.</p>
+<hr />
+<p><strong>Webographie</strong>
+- Documentation officielle de PostgreSQL : https://www.postgresql.org/docs/
+- Documentation de FastAPI : https://fastapi.tiangolo.com/
+- Documentation de Next.js : https://nextjs.org/docs</p>
+<p><strong>Bibliographie</strong>
+- <em>Merise, guide pratique : Modélisation des données et des traitements</em>, Éditions Eyrolles.
+- Support de cours d'ingénierie logicielle et bases de données de l'UVCI.</p>
+</body>
+</html>

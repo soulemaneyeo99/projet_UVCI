@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Diagrammes de Flux et MOT — Projet UVCI</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#eee; padding:20px; margin:0; }
+  h1   { text-align:center; font-size:20px; color:#333; margin-bottom:4px; }
+  p.sub{ text-align:center; color:#666; font-size:13px; margin-bottom:24px; }
+  h3   { font-size:16px; color:#2C3E50; border-left:4px solid #E67E22;
+         padding-left:10px; margin:40px auto 10px; max-width:800px; }
+  .desc { max-width:800px; margin:0 auto 15px; font-size:13px; color:#555; line-height:1.5; }
+  svg  { display:block; margin:0 auto 30px; background:#fff;
+         border:1px solid #bbb; border-radius:6px;
+         box-shadow:0 2px 8px rgba(0,0,0,.15); }
+  .btn { display:block; margin:20px auto 40px; padding:10px 28px;
+         background:#2C3E50; color:#fff; border:none; border-radius:5px;
+         font-size:14px; cursor:pointer; }
+  .btn:hover { background:#1A252F; }
+  @media print { .btn { display:none; } }
+</style>
+</head>
+<body>
+<h1>Diagrammes de Flux et Modèle Organisationnel (MOT)</h1>
+<p class="sub">Système de gestion des heures pédagogiques — UVCI</p>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DIAGRAMME DES FLUX
+════════════════════════════════════════════════════════════ -->
+<h3>A. Diagramme des Flux d'Information</h3>
+<p class="desc">Ce diagramme représente les échanges d'informations entre les acteurs du système (Enseignant, Administration) et le domaine d'étude (Le Système UVCI).</p>
+<svg width="800" height="300">
+<defs>
+  <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <polygon points="0 0,8 3,0 6" fill="#34495E"/>
+  </marker>
+  <style>
+    .act { fill:#ECF0F1; stroke:#2C3E50; stroke-width:2; rx:5; }
+    .sys { fill:#FDEBD0; stroke:#E67E22; stroke-width:2; rx:5; }
+    .txt { font-family:Arial; font-size:12px; font-weight:bold; fill:#2C3E50; text-anchor:middle; }
+    .flx { font-family:Arial; font-size:11px; fill:#34495E; text-anchor:middle; }
+    .lin { stroke:#34495E; stroke-width:1.5; fill:none; marker-end:url(#arr); }
+  </style>
+</defs>
+
+<!-- Acteurs -->
+<rect class="act" x="50"  y="110" width="140" height="60"/>
+<text class="txt" x="120" y="145">ENSEIGNANT</text>
+
+<rect class="sys" x="330" y="100" width="140" height="80"/>
+<text class="txt" x="400" y="135">SYSTÈME UVCI</text>
+<text class="flx" x="400" y="155" font-size="10">(Application)</text>
+
+<rect class="act" x="610" y="110" width="140" height="60"/>
+<text class="txt" x="680" y="145">ADMINISTRATION</text>
+
+<!-- Flux Enseignant <-> Système -->
+<path class="lin" d="M 190 120 Q 260 90 330 120"/>
+<text class="flx" x="260" y="100">1. Déclaration d'activité</text>
+
+<path class="lin" d="M 330 160 Q 260 190 190 160"/>
+<text class="flx" x="260" y="195">4. Notification de statut</text>
+
+<!-- Flux Système <-> Administration -->
+<path class="lin" d="M 470 120 Q 540 90 610 120"/>
+<text class="flx" x="540" y="100">2. Alertes à valider</text>
+
+<path class="lin" d="M 610 140 Q 540 140 470 140"/>
+<text class="flx" x="540" y="135">3. Décision de validation</text>
+
+<path class="lin" d="M 610 160 Q 540 190 470 160"/>
+<text class="flx" x="540" y="195">5. Demande d'états de paiement</text>
+
+<path class="lin" d="M 470 175 Q 540 220 610 175"/>
+<text class="flx" x="540" y="215">6. Fichier d'export généré</text>
+
+</svg>
+
+<!-- ═══════════════════════════════════════════════════════════
+     GRAPHE D'ORDONNANCEMENT
+════════════════════════════════════════════════════════════ -->
+<h3>B. Graphe d'Ordonnancement des Flux</h3>
+<p class="desc">Il montre la chronologie et l'enchaînement logique des flux d'information modélisés ci-dessus.</p>
+<svg width="800" height="150">
+<defs>
+  <style>
+    .cir { fill:#3498DB; stroke:#2980B9; stroke-width:2; }
+    .cnm { font-family:Arial; font-size:14px; font-weight:bold; fill:#FFF; text-anchor:middle; }
+    .flabel { font-family:Arial; font-size:11px; fill:#34495E; text-anchor:middle; }
+  </style>
+</defs>
+
+<circle class="cir" cx="100" cy="70" r="18"/> <text class="cnm" x="100" cy="75">1</text>
+<line class="lin" x1="118" y1="70" x2="202" y2="70"/>
+<text class="flabel" x="160" y="60">Déclaration</text>
+
+<circle class="cir" cx="220" cy="70" r="18"/> <text class="cnm" x="220" cy="75">2</text>
+<line class="lin" x1="238" y1="70" x2="322" y2="70"/>
+<text class="flabel" x="280" y="60">Alerte admin</text>
+
+<circle class="cir" cx="340" cy="70" r="18"/> <text class="cnm" x="340" cy="75">3</text>
+<line class="lin" x1="358" y1="70" x2="442" y2="70"/>
+<text class="flabel" x="400" y="60">Décision</text>
+
+<circle class="cir" cx="460" cy="70" r="18"/> <text class="cnm" x="460" cy="75">4</text>
+<line class="lin" x1="478" y1="70" x2="562" y2="70"/>
+<text class="flabel" x="520" y="60">Notification</text>
+
+<circle class="cir" cx="580" cy="70" r="18"/> <text class="cnm" x="580" cy="75">5</text>
+<line class="lin" x1="598" y1="70" x2="682" y2="70"/>
+<text class="flabel" x="640" y="60">Demande export</text>
+
+<circle class="cir" cx="700" cy="70" r="18"/> <text class="cnm" x="700" cy="75">6</text>
+<text class="flabel" x="700" y="110">Fichier fourni</text>
+</svg>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODÈLE ORGANISATIONNEL DE TRAITEMENTS (MOT)
+════════════════════════════════════════════════════════════ -->
+<h3>C. Modèle Organisationnel de Traitements (MOT)</h3>
+<p class="desc">Le MOT enrichit le MCT en répondant aux questions : <b>Qui ? Où ? Quand ?</b>. Il répartit les tâches entre les acteurs (postes de travail) et précise la nature du traitement (Manuel, Interactif, Automatique).</p>
+<svg width="800" height="520">
+<defs>
+  <style>
+    .grid { stroke:#BDC3C7; stroke-width:1; }
+    .ghead { fill:#2C3E50; font-family:Arial; font-size:12px; font-weight:bold; fill:#FFF; text-anchor:middle; }
+    .phase { fill:#ECF0F1; font-family:Arial; font-size:11px; font-weight:bold; fill:#2C3E50; text-anchor:middle; }
+    .tbox { fill:#FFFF99; stroke:#CC8800; stroke-width:1.5; rx:3; }
+    .ttxt { font-family:Arial; font-size:11px; fill:#333; text-anchor:middle; }
+    .tinfo { font-family:Arial; font-size:10px; fill:#E67E22; font-style:italic; text-anchor:middle; }
+    .evbox { fill:#AACCFF; stroke:#0055AA; stroke-width:1.5; rx:15; }
+  </style>
+</defs>
+
+<!-- Lignes de grille (Colonnes) -->
+<rect x="0" y="0" width="800" height="30" fill="#34495E"/>
+<line class="grid" x1="100" y1="0" x2="100" y2="520"/>
+<line class="grid" x1="333" y1="0" x2="333" y2="520"/>
+<line class="grid" x1="566" y1="0" x2="566" y2="520"/>
+
+<text class="ghead" x="50"  y="20">PÉRIODE</text>
+<text class="ghead" x="216" y="20">ENSEIGNANT</text>
+<text class="ghead" x="450" y="20">SYSTÈME (AUTO)</text>
+<text class="ghead" x="683" y="20">ADMINISTRATION</text>
+
+<!-- Lignes de grille (Phases temporelles) -->
+<line class="grid" x1="0" y1="160" x2="800" y2="160"/>
+<line class="grid" x1="0" y1="360" x2="800" y2="360"/>
+
+<rect x="0" y="30" width="100" height="130" fill="#ECF0F1"/>
+<text class="phase" x="50" y="95">Au fil de l'eau</text>
+
+<rect x="0" y="160" width="100" height="200" fill="#ECF0F1"/>
+<text class="phase" x="50" y="260">Journalier</text>
+
+<rect x="0" y="360" width="100" height="160" fill="#ECF0F1"/>
+<text class="phase" x="50" y="440">Fin d'année</text>
+
+<!-- Phase 1 : Déclaration -->
+<rect class="evbox" x="120" y="40" width="190" height="30"/>
+<text class="ttxt" x="215" y="59">Saisie formulaire activité</text>
+
+<line class="lin" x1="310" y1="55" x2="360" y2="55"/>
+
+<rect class="tbox" x="360" y="40" width="180" height="60"/>
+<text class="ttxt" x="450" y="60">Vérifications & Calculs</text>
+<text class="ttxt" x="450" y="75">Enregistrement BDD</text>
+<text class="tinfo" x="450" y="90">[Automatique]</text>
+
+<line class="lin" x1="540" y1="70" x2="590" y2="70"/>
+<text class="ttxt" x="565" y="65">Alerte</text>
+
+<!-- Phase 2 : Validation -->
+<rect class="evbox" x="590" y="180" width="190" height="30"/>
+<text class="ttxt" x="685" y="199">Consultation liste attente</text>
+
+<line class="lin" x1="685" y1="210" x2="685" y2="240"/>
+
+<rect class="tbox" x="595" y="240" width="180" height="60"/>
+<text class="ttxt" x="685" y="260">Examen des preuves</text>
+<text class="ttxt" x="685" y="275">Décision (Valider/Rejeter)</text>
+<text class="tinfo" x="685" y="290">[Interactif]</text>
+
+<line class="lin" x1="595" y1="270" x2="520" y2="270"/>
+
+<rect class="tbox" x="360" y="240" width="160" height="60"/>
+<text class="ttxt" x="440" y="260">Mise à jour statut</text>
+<text class="ttxt" x="440" y="275">Comptabilisation heures</text>
+<text class="tinfo" x="440" y="290">[Automatique]</text>
+
+<line class="lin" x1="360" y1="270" x2="290" y2="270"/>
+
+<rect class="evbox" x="120" y="255" width="170" height="30"/>
+<text class="ttxt" x="205" y="274">Réception notification</text>
+
+
+<!-- Phase 3 : Export -->
+<rect class="evbox" x="590" y="380" width="190" height="30"/>
+<text class="ttxt" x="685" y="399">Demande export global</text>
+
+<line class="lin" x1="590" y1="395" x2="520" y2="395"/>
+
+<rect class="tbox" x="340" y="380" width="180" height="80"/>
+<text class="ttxt" x="430" y="400">Filtrage activités validées</text>
+<text class="ttxt" x="430" y="415">Application des quotas</text>
+<text class="ttxt" x="430" y="430">Calcul rémunération</text>
+<text class="tinfo" x="430" y="445">[Automatique - Batch]</text>
+
+<line class="lin" x1="430" y1="460" x2="430" y2="480"/>
+<line class="lin" x1="430" y1="480" x2="685" y2="480"/>
+<line class="lin" x1="685" y1="480" x2="685" y2="465"/>
+
+<rect class="evbox" x="590" y="435" width="190" height="30"/>
+<text class="ttxt" x="685" y="454">Téléchargement Excel</text>
+
+</svg>
+
+<button class="btn" onclick="window.print()">Imprimer / Exporter en PDF</button>
+</body>
+</html>

@@ -100,7 +100,7 @@ export default function SecretaryDashboardPage() {
             <h3 style={{ fontWeight: 700, fontSize: '0.95rem' }}>Activités récentes</h3>
             <p style={{ fontSize: '0.75rem', color: '#64748B' }}>Toutes les activités soumises</p>
           </div>
-          <Link href="/secretary/activities" className="btn btn-primary btn-sm">
+          <Link href="/secretaire/activites" className="btn btn-primary btn-sm">
             + Nouvelle activité
           </Link>
         </div>
