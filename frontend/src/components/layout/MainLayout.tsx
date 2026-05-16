@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 
-const PUBLIC_ROUTES = ['/'];
+const PUBLIC_ROUTES = ['/', '/login'];
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();

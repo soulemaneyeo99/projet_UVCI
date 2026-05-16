@@ -118,7 +118,7 @@ export default function DashboardPage() {
               <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Top enseignants</h3>
               <p style={{ fontSize: '0.75rem', color: '#64748B' }}>Par volume horaire total</p>
             </div>
-            <Link href="/teachers" className="btn btn-ghost btn-sm">Voir tous</Link>
+            <Link href="/enseignants" className="btn btn-ghost btn-sm">Voir tous</Link>
           </div>
           <div className="table-container">
             <table>
@@ -152,7 +152,7 @@ export default function DashboardPage() {
             </table>
           </div>
         </div>
-
+ 
         {/* Recent activities */}
         <div className="card" style={{ padding: 0 }}>
           <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -160,7 +160,7 @@ export default function DashboardPage() {
               <h3 style={{ fontSize: '0.95rem', fontWeight: 700 }}>Activités récentes</h3>
               <p style={{ fontSize: '0.75rem', color: '#64748B' }}>Dernières soumissions</p>
             </div>
-            <Link href="/activities" className="btn btn-ghost btn-sm">Voir toutes</Link>
+            <Link href="/activites" className="btn btn-ghost btn-sm">Voir toutes</Link>
           </div>
           <div className="table-container">
             <table>
