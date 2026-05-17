@@ -1,31 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guide Utilisateur Complet - Système de Gestion des Heures UVCI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        Guide Utilisateur Complet - Système de Gestion des Heures UVCI
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         :root {
-            --primary: #1F4E79;
-            --primary-light: #2E75B6;
-            --secondary: #16A34A;
-            --accent: #D97706;
-            --danger: #DC2626;
-            --bg-body: #F8FAFC;
-            --bg-card: #FFFFFF;
-            --text-main: #1E293B;
-            --text-muted: #64748B;
+            --primary: #1f4e79;
+            --primary-light: #2e75b6;
+            --secondary: #16a34a;
+            --accent: #d97706;
+            --danger: #dc2626;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
             --sidebar-width: 280px;
             --radius: 12px;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow:
+                0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: "Inter", sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
             line-height: 1.6;
@@ -50,13 +59,13 @@
             gap: 12px;
             margin-bottom: 2.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .logo-container .icon {
             width: 40px;
             height: 40px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -65,21 +74,29 @@
             font-size: 1.2rem;
         }
 
-        .nav-list { list-style: none; }
-        .nav-item { margin-bottom: 0.5rem; }
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
         .nav-link {
             display: flex;
             align-items: center;
             gap: 10px;
             padding: 0.75rem 1rem;
             text-decoration: none;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             border-radius: 8px;
             font-weight: 500;
             transition: all 0.2s ease;
         }
-        .nav-link:hover, .nav-link.active {
-            background: rgba(255,255,255,0.15);
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
             color: white;
         }
 
@@ -87,7 +104,7 @@
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             margin: 1.5rem 0 0.5rem 1rem;
             font-weight: 600;
         }
@@ -102,7 +119,7 @@
 
         header {
             margin-bottom: 3rem;
-            border-bottom: 1px solid #E2E8F0;
+            border-bottom: 1px solid #e2e8f0;
             padding-bottom: 2rem;
         }
 
@@ -121,7 +138,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            border-bottom: 2px solid #F1F5F9;
+            border-bottom: 2px solid #f1f5f9;
             padding-bottom: 0.5rem;
         }
 
@@ -132,25 +149,28 @@
             color: var(--primary-light);
         }
 
-        p { margin-bottom: 1.25rem; font-size: 1.05rem; }
+        p {
+            margin-bottom: 1.25rem;
+            font-size: 1.05rem;
+        }
 
         .card {
             background: var(--bg-card);
             border-radius: var(--radius);
             padding: 2rem;
             box-shadow: var(--shadow);
-            border: 1px solid #F1F5F9;
+            border: 1px solid #f1f5f9;
             margin-bottom: 2rem;
         }
 
         /* Highlights */
         .info-box {
-            background: #EFF6FF;
+            background: #eff6ff;
             border-left: 4px solid var(--primary-light);
             padding: 1.25rem;
             border-radius: 4px 8px 8px 4px;
             margin: 1.5rem 0;
-            color: #1E3A8A;
+            color: #1e3a8a;
         }
 
         /* Images representation */
@@ -158,16 +178,18 @@
             margin: 2rem 0;
             text-align: center;
         }
-        
+
         .screenshot-viewer {
             max-width: 100%;
             height: auto;
-            border: 1px solid #CBD5E1;
+            border: 1px solid #cbd5e1;
             border-radius: var(--radius);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            box-shadow:
+                0 10px 15px -3px rgb(0 0 0 / 0.1),
+                0 4px 6px -4px rgb(0 0 0 / 0.1);
             display: inline-block;
         }
-        
+
         .screenshot-caption {
             font-size: 0.9rem;
             color: var(--text-muted);
@@ -182,17 +204,18 @@
             background: white;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        th, td {
+        th,
+        td {
             padding: 1rem;
             text-align: left;
-            border-bottom: 1px solid #E2E8F0;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         th {
-            background: #F8FAFC;
+            background: #f8fafc;
             font-weight: 600;
             color: var(--primary);
             text-transform: uppercase;
@@ -207,217 +230,307 @@
             font-weight: 700;
             text-transform: uppercase;
         }
-        .badge-admin { background: #1E293B; color: white; }
-        .badge-secretary { background: #3B82F6; color: white; }
-        .badge-teacher { background: #10B981; color: white; }
+
+        .badge-admin {
+            background: #1e293b;
+            color: white;
+        }
+
+        .badge-secretary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .badge-teacher {
+            background: #10b981;
+            color: white;
+        }
 
         footer {
             margin-top: 4rem;
             padding-top: 2rem;
             border-bottom: 4rem solid transparent;
-            border-top: 1px solid #E2E8F0;
+            border-top: 1px solid #e2e8f0;
             text-align: center;
             color: var(--text-muted);
             font-size: 0.875rem;
         }
 
         @media print {
-            .sidebar { display: none; }
-            .main-content { margin: 0; padding: 1cm; max-width: 100%; }
-            .card { box-shadow: none; border: 1px solid #CCC; break-inside: avoid; }
-            h2 { page-break-before: always; }
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin: 0;
+                padding: 1cm;
+                max-width: 100%;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                break-inside: avoid;
+            }
+
+            h2 {
+                page-break-before: always;
+            }
         }
     </style>
 </head>
+
 <body>
     <nav class="sidebar">
         <div class="logo-container">
             <div class="icon"><i class="fas fa-graduation-cap"></i></div>
             <div>
-                <div style="font-weight: 700; font-size: 1.1rem; line-height: 1.2;">GestionHeures</div>
-                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">UVCI</div>
+                <div style="font-weight: 700; font-size: 1.1rem; line-height: 1.2">
+                    GestionHeures
+                </div>
+                <div style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.6)">
+                    UVCI
+                </div>
             </div>
         </div>
-        
+
         <ul class="nav-list">
-            <li class="nav-item"><a href="#intro" class="nav-link"><i class="fas fa-home w-5"></i> <span>Introduction</span></a></li>
-            <li class="nav-item"><a href="#connexion" class="nav-link"><i class="fas fa-sign-in-alt w-5"></i> <span>Connexion</span></a></li>
-            
+            <li class="nav-item">
+                <a href="#intro" class="nav-link"><i class="fas fa-home w-5"></i> <span>Introduction</span></a>
+            </li>
+            <li class="nav-item">
+                <a href="#connexion" class="nav-link"><i class="fas fa-sign-in-alt w-5"></i> <span>Connexion</span></a>
+            </li>
+
             <div class="nav-section-title">Guides par Profil</div>
-            <li class="nav-item"><a href="#admin" class="nav-link"><i class="fas fa-user-shield w-5"></i> <span>Administrateur</span></a></li>
-            <li class="nav-item"><a href="#secretaire" class="nav-link"><i class="fas fa-user-tie w-5"></i> <span>Secrétaire Principal</span></a></li>
-            <li class="nav-item"><a href="#enseignant" class="nav-link"><i class="fas fa-chalkboard-teacher w-5"></i> <span>Enseignant</span></a></li>
-            
+            <li class="nav-item">
+                <a href="#admin" class="nav-link"><i class="fas fa-user-shield w-5"></i>
+                    <span>Administrateur</span></a>
+            </li>
+            <li class="nav-item">
+                <a href="#secretaire" class="nav-link"><i class="fas fa-user-tie w-5"></i>
+                    <span>Secrétaire Principal</span></a>
+            </li>
+            <li class="nav-item">
+                <a href="#enseignant" class="nav-link"><i class="fas fa-chalkboard-teacher w-5"></i>
+                    <span>Enseignant</span></a>
+            </li>
+
             <div class="nav-section-title">Annexes</div>
-            <li class="nav-item"><a href="#calculs" class="nav-link"><i class="fas fa-calculator w-5"></i> <span>Règles de calcul</span></a></li>
+            <li class="nav-item">
+                <a href="#calculs" class="nav-link"><i class="fas fa-calculator w-5"></i>
+                    <span>Règles de calcul</span></a>
+            </li>
         </ul>
     </nav>
 
     <main class="main-content">
         <header>
             <h1>Guide Utilisateur Exhaustif</h1>
-            <p style="color: var(--text-muted); font-size: 1.1rem;">Manuel complet d'utilisation de la Plateforme de Gestion des Heures Pédagogiques - Université Virtuelle de Côte d'Ivoire</p>
+            <p style="color: var(--text-muted); font-size: 1.1rem">
+                Manuel complet d'utilisation de la Plateforme de Gestion des Heures
+                Pédagogiques - Université Virtuelle de Côte d'Ivoire
+            </p>
         </header>
 
         <section id="intro">
             <h2><i class="fas fa-info-circle text-primary"></i> 1. Introduction</h2>
             <div class="card">
-                <p>Bienvenue sur le guide d'utilisation exhaustif de la plateforme <strong>GestionHeures UVCI</strong>. Ce système a été mis en place pour automatiser, fiabiliser et simplifier le suivi des activités pédagogiques des enseignants de l'Université Virtuelle de Côte d'Ivoire.</p>
-                <p>La plateforme propose une expérience personnalisée avec trois profils distincts, disposant chacun de fonctionnalités spécifiques :</p>
+                <p>
+                    Bienvenue sur le guide d'utilisation exhaustif de la plateforme
+                    <strong>GestionHeures UVCI</strong>. Ce système automatise et
+                    sécurise le suivi des activités pédagogiques des enseignants de
+                    l'Université Virtuelle de Côte d'Ivoire.
+                </p>
+
+                <p>Le système propose trois espaces dédiés :</p>
                 <ul>
-                    <li><span class="badge badge-admin">Administrateur</span> : Configuration globale, gestion des utilisateurs, des cours et extraction comptable.</li>
-                    <li><span class="badge badge-secretary">Secrétaire</span> : Saisie des activités, processus de validation, et suivi de l'atteinte des seuils par les enseignants.</li>
-                    <li><span class="badge badge-teacher">Enseignant</span> : Consultation du tableau de bord personnel, historique des activités, profil et téléchargement des récapitulatifs (PDF/Excel).</li>
+                    <li>
+                        <span class="badge badge-admin">Administrateur</span> : Gestion
+                        stratégique et configuration.
+                    </li>
+                    <li>
+                        <span class="badge badge-secretary">Secrétaire</span> : Gestion
+                        opérationnelle et validation.
+                    </li>
+                    <li>
+                        <span class="badge badge-teacher">Enseignant</span> : Suivi
+                        personnel et téléchargements.
+                    </li>
                 </ul>
             </div>
         </section>
 
         <section id="connexion">
-            <h2><i class="fas fa-key text-primary"></i> 2. Authentification et Accès</h2>
+            <h2>
+                <i class="fas fa-key text-primary"></i> 2. Authentification et Accès
+            </h2>
             <div class="card">
-                <p>L'accès à la plateforme est strictement réservé au personnel autorisé de l'UVCI via une interface sécurisée.</p>
-                
+                <p>L'accès sécurisé se fait via l'adresse email institutionnelle.</p>
                 <div class="screenshot-container">
-                    <img src="assets/login_page.png" alt="Interface de Connexion" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Interface d'authentification sécurisée de la plateforme.</div>
+                    <img src="assets/login_page.png" alt="Interface de Connexion" class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Interface d'authentification sécurisée.
+                    </div>
                 </div>
-
-                <div class="info-box">
-                    <strong>Lien d'accès :</strong> Rendez-vous sur <code>https://projet-uvci.vercel.app/login</code>
-                </div>
-                <ol>
-                    <li>Saisissez votre <strong>adresse email institutionnelle</strong> (ex: prenom.nom@uvci.edu.ci).</li>
-                    <li>Saisissez votre <strong>mot de passe sécurisé</strong>.</li>
-                    <li>Cliquez sur le bouton de connexion. Le système détectera automatiquement votre rôle.</li>
-                </ol>
             </div>
         </section>
 
         <section id="admin">
-            <h2><i class="fas fa-user-shield text-primary"></i> 3. Fonctionnalités de l'Administrateur</h2>
+            <h2>
+                <i class="fas fa-user-shield text-primary"></i> 3. Fonctionnalités de
+                l'Administrateur
+            </h2>
             <div class="card">
-                <p>L'administrateur dispose des droits les plus élevés sur le système. Il supervise l'ensemble des opérations et assure la configuration de la plateforme.</p>
-                
                 <h3>3.1. Le Tableau de bord global</h3>
-                <p>À la connexion, l'administrateur accède à une vue d'ensemble complète : nombre d'enseignants, volume horaire mensuel, activités en attente et répartition par département.</p>
-                
                 <div class="screenshot-container">
-                    <img src="assets/admin_dashboard_full.png" alt="Dashboard Administrateur Complet" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Vue d'ensemble de l'activité pédagogique pour l'Administrateur.</div>
+                    <img src="assets/admin_dashboard_final.png" alt="Dashboard Administrateur"
+                        class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Vue d'ensemble de l'activité pédagogique.
+                    </div>
                 </div>
 
-                <h3>3.2. Gestion du Catalogue des Cours</h3>
-                <p>L'administrateur maintient la base de données des Unités d'Enseignement (UE). Il peut ajouter de nouveaux cours, définir les filières, les niveaux et les crédits associés.</p>
-                
+                <h3>3.2. Catalogue des Cours</h3>
                 <div class="screenshot-container">
-                    <img src="assets/admin_cours.png" alt="Gestion des Cours" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Interface de gestion exhaustive du catalogue des cours.</div>
+                    <img src="assets/admin_cours.png" alt="Gestion des Cours" class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Gestion du catalogue des Unités d'Enseignement.
+                    </div>
                 </div>
 
-                <h3>3.3. Supervision des Activités</h3>
-                <p>L'administrateur peut visualiser et saisir des activités pédagogiques, avec un historique en temps réel des dernières soumissions et de leur statut (Validé, En attente).</p>
-                
+                <h3>3.3. Saisie des Activités Pédagogiques</h3>
                 <div class="screenshot-container">
-                    <img src="assets/admin_activites.png" alt="Supervision des Activités" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Module de saisie et de supervision des activités pédagogiques.</div>
+                    <img src="assets/admin_saisie_full.png" alt="Saisie des Activités par l'Administrateur"
+                        class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Formulaire d'enregistrement des activités avec calcul automatique du volume
+                        horaire.
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="secretaire">
-            <h2><i class="fas fa-user-tie text-primary"></i> 4. Fonctionnalités du Secrétariat</h2>
+            <h2>
+                <i class="fas fa-user-tie text-primary"></i> 4. Fonctionnalités du
+                Secrétariat
+            </h2>
             <div class="card">
-                <p>Le secrétariat principal gère l'opérationnel : enregistrement des séquences, validation des activités et analyse des seuils.</p>
-
-                <h3>4.1. Tableau de bord Secrétariat & Validation</h3>
+                <h3>4.1. Tableau de bord & Validation</h3>
                 <div class="screenshot-container">
-                    <img src="assets/GestionHeures_sécrétaire_UVCI.png" alt="Tableau de bord Secrétariat" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Interface principale du Secrétariat pour la validation.</div>
+                    <img src="assets/secretaire_dashboard_full.png" alt="Tableau de bord Secrétariat"
+                        class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Interface de pilotage et boutons de validation
+                        (Valider/Rejeter).
+                    </div>
                 </div>
 
-                <h3>4.2. Liste et Suivi des Enseignants</h3>
+                <h3>4.2. Liste des Enseignants</h3>
                 <div class="screenshot-container">
-                    <img src="assets/secretaire_enseignants.png" alt="Liste des Enseignants" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Annuaire des enseignants avec suivi en temps réel de la charge.</div>
+                    <img src="assets/secretaire_enseignants_full.png" alt="Liste Enseignants"
+                        class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Suivi de la progression des heures par
+                        enseignant.
+                    </div>
                 </div>
 
-                <h3>4.3. Consultation des Rapports</h3>
+                <h3>4.3. Saisie d'Activité</h3>
                 <div class="screenshot-container">
-                    <img src="assets/secretaire_rapports.png" alt="Rapports Secrétariat" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Interface de génération des rapports et exports Excel/PDF.</div>
+                    <img src="assets/secretaire_saisie_full.png" alt="Saisie d'activité par le Secrétaire"
+                        class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Le secrétaire peut enregistrer une activité pour le compte d'un enseignant.
+                    </div>
+                </div>
+
+                <h3>4.4. Rapports & Exportation de l'État Global (Excel)</h3>
+                <p>
+                    Le secrétariat peut consulter les rapports d'heures et extraire un état complet et formaté de toutes
+                    les heures de l'établissement.
+                </p>
+                <div class="screenshot-container">
+                    <img src="assets/secretaire_rapports_full.png" alt="Rapports Secrétariat"
+                        class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Vue d'ensemble des rapports par enseignant avec option d'exportation Excel.
+                    </div>
+                </div>
+                <div class="screenshot-container">
+                    <img src="assets/resultat_excel.png" alt="Résultat Export Excel" class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Aperçu du fichier Excel généré (État Global des
+                        Heures).
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="enseignant">
-            <h2><i class="fas fa-chalkboard-teacher text-primary"></i> 5. Fonctionnalités de l'Enseignant</h2>
+            <h2>
+                <i class="fas fa-chalkboard-teacher text-primary"></i> 5.
+                Fonctionnalités de l'Enseignant
+            </h2>
             <div class="card">
-                <p>L'espace enseignant offre une transparence totale sur les heures effectuées et le statut des activités.</p>
-
                 <h3>5.1. Mon Tableau de bord</h3>
                 <div class="screenshot-container">
-                    <img src="assets/GestionHeures_enseignants_UVCI.png" alt="Tableau de Bord Enseignant" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Tableau de bord personnel de l'enseignant (Heures totales, Charge statutaire).</div>
+                    <img src="assets/enseignant_dashboard_full.png" alt="Tableau de Bord Enseignant"
+                        class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Suivi personnel des heures validées et
+                        complémentaires.
+                    </div>
                 </div>
 
                 <h3>5.2. Mes Activités</h3>
                 <div class="screenshot-container">
-                    <img src="assets/GestionHeures_enseignat_activitéUVCI.png" alt="Mes Activités Enseignant" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Historique complet et suivi du statut des activités.</div>
+                    <img src="assets/enseignant_activites_full.png" alt="Mes Activités Enseignant"
+                        class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Historique complet et statut de validation des
+                        activités.
+                    </div>
                 </div>
 
-                <h3>5.3. Mon Profil Contractuel</h3>
+                <h3>5.3. Mon Récapitulatif PDF Officiel</h3>
+                <p>
+                    L'enseignant peut télécharger sa fiche individuelle de
+                    récapitulation, prête pour l'archivage ou l'impression.
+                </p>
                 <div class="screenshot-container">
-                    <img src="assets/GestionHeures_enseignat_profil_UVCI.png" alt="Profil Enseignant" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Vue des informations personnelles et contractuelles certifiées.</div>
+                    <img src="assets/enseignant_recap_full.png" alt="Aperçu Récapitulatif" class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Interface de génération du récapitulatif.
+                    </div>
                 </div>
-
-                <h3>5.4. Récapitulatif et Téléchargement</h3>
                 <div class="screenshot-container">
-                    <img src="assets/GestionHeures_récapitulatif_enseignantUVCI.png" alt="Récapitulatif Enseignant" class="screenshot-viewer">
-                    <div class="screenshot-caption">Capture d'écran : Module de génération du récapitulatif officiel PDF/Excel.</div>
+                    <img src="assets/resultat_pdf.png" alt="Résultat Export PDF" class="screenshot-viewer" />
+                    <div class="screenshot-caption">
+                        Capture d'écran : Document PDF final généré avec l'entête
+                        officielle et le détail des activités.
+                    </div>
                 </div>
             </div>
         </section>
 
         <section id="calculs">
-            <h2><i class="fas fa-calculator text-primary"></i> 6. Annexe : Règles de Calcul et Seuils</h2>
+            <h2>
+                <i class="fas fa-calculator text-primary"></i> 6. Règles de Calcul
+            </h2>
             <div class="card">
-                <p>Le système intègre un moteur de calcul basé sur la matrice officielle de l'UVCI pour garantir l'équité.</p>
-                
-                <h3>Calcul du Volume Horaire d'une activité</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Niveau de Complexité</th>
-                            <th>Volume Horaire Base (pour 20 séquences)</th>
-                            <th>Formule de calcul dynamique</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Niveau 1</strong> (N1)</td>
-                            <td>16 Heures</td>
-                            <td>(16h / 20) × Nombre de séquences saisies</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Niveau 2</strong> (N2)</td>
-                            <td>30 Heures</td>
-                            <td>(30h / 20) × Nombre de séquences saisies</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Niveau 3</strong> (N3)</td>
-                            <td>60 Heures</td>
-                            <td>(60h / 20) × Nombre de séquences saisies</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <p>
+                    Calculs basés sur la matrice de complexité de l'UVCI pour assurer
+                    une précision totale.
+                </p>
             </div>
         </section>
 
         <footer>
-            <p>&copy; 2026 Université Virtuelle de Côte d'Ivoire (UVCI) - Tous droits réservés.</p>
+            <p>&copy; 2026 Université Virtuelle de Côte d'Ivoire (UVCI)</p>
         </footer>
     </main>
 </body>
+
 </html>

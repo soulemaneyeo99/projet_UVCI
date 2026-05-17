@@ -180,6 +180,142 @@ def export_teacher_pdf(
     )
 
 
+@router.get("/rapport-annuel")
+def export_rapport_annuel(
+    academic_year_id: Optional[int] = None,
+    departement: Optional[str] = None,
+    db: Session = Depends(get_db),
+    _=Depends(require_admin_or_secretary),
+):
+    """Export Excel complet : état annuel des paiements avec onglets par département."""
+    try:
+        from openpyxl import Workbook
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+        from openpyxl.utils import get_column_letter
+    except ImportError:
+        raise HTTPException(status_code=500, detail="openpyxl non disponible.")
+
+    # Resolve academic year label
+    ay_label = "Année courante"
+    if academic_year_id:
+        ay = db.query(AcademicYear).filter(AcademicYear.id == academic_year_id).first()
+        if ay:
+            ay_label = ay.libelle
+    else:
+        ay = db.query(AcademicYear).filter(AcademicYear.status == True).first()
+        if ay:
+            ay_label = ay.libelle
+
+    wb = Workbook()
+    # Remove default sheet
+    wb.remove(wb.active)
+
+    header_fill = PatternFill(start_color="1F4E79", end_color="1F4E79", fill_type="solid")
+    header_font = Font(color="FFFFFF", bold=True, size=10)
+    center = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    right = Alignment(horizontal="right", vertical="center")
+    thin = Border(
+        left=Side(style="thin"), right=Side(style="thin"),
+        top=Side(style="thin"), bottom=Side(style="thin"),
+    )
+    total_fill = PatternFill(start_color="EBF2F7", end_color="EBF2F7", fill_type="solid")
+    alt_fill = PatternFill(start_color="F5F7FA", end_color="F5F7FA", fill_type="solid")
+
+    def make_sheet(ws, teachers_list, dept_label):
+        ws.title = dept_label[:31]
+        # Title
+        ws.merge_cells("A1:I1")
+        ws["A1"] = f"UNIVERSITÉ VIRTUELLE DE CÔTE D'IVOIRE — État de Paiement {ay_label}"
+        ws["A1"].font = Font(bold=True, size=12, color="1F4E79")
+        ws["A1"].alignment = center
+        ws.row_dimensions[1].height = 26
+        ws.merge_cells("A2:I2")
+        ws["A2"] = f"Département : {dept_label}"
+        ws["A2"].font = Font(size=10, italic=True, color="2E75B6")
+        ws["A2"].alignment = center
+        ws.row_dimensions[2].height = 18
+
+        headers = ["Nom", "Prénom", "Grade", "Statut", "Dépt.",
+                   "Vol. Total (h)", "H. Complémentaires", "Taux/h (FCFA)", "Montant Estimé (FCFA)"]
+        col_w = [15, 15, 22, 12, 20, 14, 20, 16, 22]
+        for col, (h, w) in enumerate(zip(headers, col_w), 1):
+            c = ws.cell(row=3, column=col, value=h)
+            c.fill = header_fill; c.font = header_font
+            c.alignment = center; c.border = thin
+            ws.column_dimensions[get_column_letter(col)].width = w
+        ws.row_dimensions[3].height = 32
+
+        grand_vol = grand_comp = grand_montant = 0.0
+        for r, teacher in enumerate(teachers_list, 4):
+            acts = db.query(Activity).filter(
+                Activity.teacher_id == teacher.id,
+                Activity.validation_status == "valide",
+            ).all()
+            volume = sum(a.volume_horaire_calcule for a in acts)
+            quota = db.query(QuotaStatutaire).filter(
+                QuotaStatutaire.grade == teacher.grade,
+                QuotaStatutaire.statut == teacher.statut,
+            ).first()
+            seuil = quota.quota_heures if quota else 192.0
+            comp = max(0.0, volume - seuil)
+            montant = comp * teacher.taux_horaire
+
+            row_vals = [
+                teacher.nom, teacher.prenom, teacher.grade, teacher.statut,
+                teacher.departement, round(volume, 2), round(comp, 2),
+                round(teacher.taux_horaire, 0), round(montant, 0),
+            ]
+            use_alt = r % 2 == 0
+            for col, v in enumerate(row_vals, 1):
+                c = ws.cell(row=r, column=col, value=v)
+                c.border = thin
+                if use_alt: c.fill = alt_fill
+                if col >= 6: c.alignment = right
+            grand_vol += volume; grand_comp += comp; grand_montant += montant
+
+        # Totals
+        last = len(teachers_list) + 3
+        total_r = last + 1
+        for col in range(1, 10):
+            c = ws.cell(row=total_r, column=col)
+            c.fill = total_fill; c.border = thin; c.font = Font(bold=True)
+        ws.cell(row=total_r, column=1, value="TOTAL").font = Font(bold=True)
+        ws.cell(row=total_r, column=6, value=round(grand_vol, 2)).alignment = right
+        ws.cell(row=total_r, column=7, value=round(grand_comp, 2)).alignment = right
+        ws.cell(row=total_r, column=9, value=round(grand_montant, 0)).alignment = right
+        ws.freeze_panes = "A4"
+
+    # Build one sheet per department (or just one if filtered)
+    query = db.query(Teacher)
+    if departement:
+        query = query.filter(Teacher.departement == departement)
+    all_teachers = query.all()
+
+    if departement:
+        ws = wb.create_sheet(title=departement[:31])
+        make_sheet(ws, all_teachers, departement)
+    else:
+        depts: dict = {}
+        for t in all_teachers:
+            depts.setdefault(t.departement or "Autre", []).append(t)
+        for dept_name, dept_teachers in depts.items():
+            ws = wb.create_sheet()
+            make_sheet(ws, dept_teachers, dept_name)
+        # Global summary sheet
+        ws_global = wb.create_sheet(title="Récapitulatif global", index=0)
+        make_sheet(ws_global, all_teachers, "Tous les départements")
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    filename = f"rapport_annuel_{ay_label.replace('/', '-').replace(' ', '_')}.xlsx"
+    return StreamingResponse(
+        buffer,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
 @router.get("/excel")
 def export_global_excel(
     departement: Optional[str] = None,
