@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional, List
+from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime
 from enum import Enum
 
@@ -37,14 +37,6 @@ class ValidationStatus(str, Enum):
 # User schemas
 # ---------------------------------------------------------------------------
 
-class UserCreate(BaseModel):
-    email: str
-    password: str
-    role: UserRole = UserRole.teacher
-    nom: Optional[str] = None
-    prenom: Optional[str] = None
-
-
 class UserManage(BaseModel):
     """Schema used by Admin to create/update a user account."""
     email: str
@@ -56,11 +48,6 @@ class UserManage(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
-
-
-class UserFaceVerify(BaseModel):
-    email: str
-    face_image_base64: str
 
 
 class UserOut(BaseModel):

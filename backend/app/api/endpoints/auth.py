@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.models.models import User, Teacher
-from app.schemas.schemas import UserLogin, UserCreate, UserFaceVerify
+from app.schemas.schemas import UserLogin
 from app.core import security
 
 router = APIRouter()
@@ -25,7 +25,6 @@ def login(user_in: UserLogin, db: Session = Depends(get_db)):
             detail="Ce compte a été désactivé. Contactez l'administrateur.",
         )
 
-    # Resolve teacher_id if the user has a linked teacher profile
     teacher = db.query(Teacher).filter(Teacher.user_id == user.id).first()
 
     access_token = security.create_access_token(
@@ -42,47 +41,6 @@ def login(user_in: UserLogin, db: Session = Depends(get_db)):
         "email": user.email,
         "teacher_id": teacher.id if teacher else None,
     }
-
-
-@router.post("/register")
-def register(user_in: UserCreate, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.email == user_in.email).first()
-    if existing:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Un utilisateur avec cet email existe déjà",
-        )
-
-    new_user = User(
-        email=user_in.email,
-        hashed_password=security.get_password_hash(user_in.password),
-        role=user_in.role,
-        est_actif=True,
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    return {
-        "id": new_user.id,
-        "email": new_user.email,
-        "role": new_user.role,
-    }
-
-
-@router.post("/face-verify")
-def face_verify(verify_in: UserFaceVerify, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == verify_in.email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
-
-    if not user.face_encoding:
-        raise HTTPException(
-            status_code=400,
-            detail="Aucun profil biométrique enregistré pour cet utilisateur",
-        )
-
-    return {"status": "success", "message": "Identité biométrique confirmée"}
 
 
 @router.get("/me")
