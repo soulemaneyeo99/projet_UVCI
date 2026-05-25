@@ -1,15 +1,27 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
 
 from app.db.database import get_db
-from app.models.models import Activity, Teacher, Course, Resource, AcademicYear
+from app.models.models import Activity, Teacher, Course, Resource, AcademicYear, User
 from app.schemas.schemas import ActivityCreate, ActivityOut, ActivityValidate
 from app.services.calculator import calculate_volume_horaire
-from app.core.security import require_admin_or_secretary, require_authenticated
+from app.core.security import require_admin_or_secretary, get_current_user
 
 router = APIRouter()
+
+
+def _ensure_teacher_can_access(current_user: User, teacher_id: int, db: Session) -> None:
+    """Un enseignant ne peut accéder qu'à ses propres données ; admin/secrétaire ont accès complet."""
+    if current_user.role in ("admin", "secretary"):
+        return
+    teacher = db.query(Teacher).filter(Teacher.user_id == current_user.id).first()
+    if teacher is None or teacher.id != teacher_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Vous ne pouvez consulter que vos propres activités",
+        )
 
 
 def _build_activity_out(act: Activity, db: Session) -> ActivityOut:
@@ -63,6 +75,7 @@ def create_activity(
         activity.type_activite,
         activity.niveau_complexite,
         activity.nb_sequences,
+        db=db,
     )
 
     annee_label = None
@@ -71,15 +84,27 @@ def create_activity(
         if ay:
             annee_label = ay.libelle
 
-    # Create the linked Resource row first
-    resource = Resource(
-        type=activity.type_activite,
-        niveau_complexite=activity.niveau_complexite,
-        course_id=activity.course_id,
-        teacher_id=activity.teacher_id,
+    # Réutiliser une Resource existante pour la même combinaison (enseignant, cours, type, niveau)
+    # afin que la table Resource reste un référentiel et non un journal dupliqué d'activités.
+    resource = (
+        db.query(Resource)
+        .filter(
+            Resource.teacher_id == activity.teacher_id,
+            Resource.course_id == activity.course_id,
+            Resource.type == activity.type_activite,
+            Resource.niveau_complexite == activity.niveau_complexite,
+        )
+        .first()
     )
-    db.add(resource)
-    db.flush()
+    if resource is None:
+        resource = Resource(
+            type=activity.type_activite,
+            niveau_complexite=activity.niveau_complexite,
+            course_id=activity.course_id,
+            teacher_id=activity.teacher_id,
+        )
+        db.add(resource)
+        db.flush()
 
     db_activity = Activity(
         type=activity.type_activite,
@@ -119,11 +144,19 @@ def list_activities(
     teacher_id: Optional[int] = None,
     validation_status: Optional[str] = None,
     db: Session = Depends(get_db),
-    _=Depends(require_authenticated),
+    current_user: User = Depends(get_current_user),
 ):
     query = db.query(Activity)
-    if teacher_id:
+
+    # RBAC : un enseignant ne voit que ses propres activités
+    if current_user.role == "teacher":
+        own_teacher = db.query(Teacher).filter(Teacher.user_id == current_user.id).first()
+        if own_teacher is None:
+            return []
+        query = query.filter(Activity.teacher_id == own_teacher.id)
+    elif teacher_id:
         query = query.filter(Activity.teacher_id == teacher_id)
+
     if validation_status:
         query = query.filter(Activity.validation_status == validation_status)
 
@@ -135,8 +168,9 @@ def list_activities(
 def get_teacher_activities(
     teacher_id: int,
     db: Session = Depends(get_db),
-    _=Depends(require_authenticated),
+    current_user: User = Depends(get_current_user),
 ):
+    _ensure_teacher_can_access(current_user, teacher_id, db)
     activities = (
         db.query(Activity)
         .filter(Activity.teacher_id == teacher_id)
@@ -149,16 +183,22 @@ def get_teacher_activities(
 @router.get("/volume/{teacher_id}")
 def get_teacher_volume(
     teacher_id: int,
+    academic_year_id: Optional[int] = None,
     db: Session = Depends(get_db),
-    _=Depends(require_authenticated),
+    current_user: User = Depends(get_current_user),
 ):
-    activities = db.query(Activity).filter(Activity.teacher_id == teacher_id).all()
+    _ensure_teacher_can_access(current_user, teacher_id, db)
+    query = db.query(Activity).filter(Activity.teacher_id == teacher_id)
+    if academic_year_id is not None:
+        query = query.filter(Activity.academic_year_id == academic_year_id)
+    activities = query.all()
     total = sum(a.volume_horaire_calcule for a in activities)
     validated = sum(
         a.volume_horaire_calcule for a in activities if a.validation_status == "valide"
     )
     return {
         "teacher_id": teacher_id,
+        "academic_year_id": academic_year_id,
         "volume_total": round(total, 2),
         "volume_valide": round(validated, 2),
         "nb_activites": len(activities),
@@ -170,7 +210,7 @@ def validate_activity(
     activity_id: int,
     data: ActivityValidate,
     db: Session = Depends(get_db),
-    _=Depends(require_admin_or_secretary),
+    current_user: User = Depends(require_admin_or_secretary),
 ):
     activity = db.query(Activity).filter(Activity.id == activity_id).first()
     if not activity:
@@ -179,8 +219,11 @@ def validate_activity(
     activity.validation_status = data.validation_status
     if data.validation_status == "valide":
         activity.validated_at = datetime.utcnow()
-    elif data.validation_status in ("rejetee", "en_attente"):
+        activity.validated_by = current_user.id
+    else:
+        # rejetee ou en_attente : on remet à zéro la traçabilité de validation
         activity.validated_at = None
+        activity.validated_by = None
 
     db.commit()
     return {"message": "Statut mis à jour", "status": data.validation_status}
