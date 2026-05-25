@@ -14,7 +14,8 @@ def _parse_cors_origins() -> list:
     """Liste des origines CORS autorisées.
 
     Source : variable d'env `CORS_ORIGINS` (CSV).
-    Défaut : localhost dev (Next.js sur :3000).
+    Défaut : localhost dev + URL Vercel de production (filet de sécurité si
+    la variable n'est pas configurée côté Render).
     """
     raw = os.getenv("CORS_ORIGINS")
     if raw:
@@ -22,6 +23,7 @@ def _parse_cors_origins() -> list:
     return [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "https://projet-uvci.vercel.app",
     ]
 
 
@@ -192,6 +194,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_parse_cors_origins(),
+    # Couvre les preview deploys Vercel (https://projet-uvci-<hash>-<scope>.vercel.app)
+    allow_origin_regex=r"https://projet-uvci-.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
