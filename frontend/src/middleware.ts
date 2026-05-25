@@ -27,7 +27,9 @@ export function middleware(request: NextRequest) {
   if (path.startsWith('/secretaire') && role !== 'secretary') {
     return NextResponse.redirect(new URL('/login', request.url));
   }
-  if (path.startsWith('/enseignant') && role !== 'teacher') {
+  // ⚠ on doit matcher `/enseignant` ou `/enseignant/...` mais PAS `/enseignants`
+  // (la route admin "enseignants" commence par "enseignant" en tant que préfixe).
+  if ((path === '/enseignant' || path.startsWith('/enseignant/')) && role !== 'teacher') {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
