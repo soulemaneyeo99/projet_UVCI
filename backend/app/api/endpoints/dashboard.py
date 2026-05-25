@@ -1,15 +1,79 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from app.db.database import get_db
-from app.models.models import Teacher, Course, Activity, Resource
+from app.models.models import Teacher, Course, Activity, Resource, User, QuotaStatutaire
+from app.core.security import require_admin_or_secretary, get_current_user
 
 router = APIRouter()
 
 
+MONTH_NAMES_FR = [
+    "Jan", "Fév", "Mar", "Avr", "Mai", "Jun",
+    "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc",
+]
+
+
+def _month_offset(d: datetime, months_back: int) -> datetime:
+    """Retourne le 1er du mois situé `months_back` mois avant `d` (arithmétique calendaire propre)."""
+    y, m = d.year, d.month - months_back
+    while m <= 0:
+        m += 12
+        y -= 1
+    while m > 12:
+        m -= 12
+        y += 1
+    return datetime(y, m, 1)
+
+
+def _build_monthly_series(activities, now: datetime, nb_months: int = 6) -> list:
+    """Construit la série mensuelle des volumes horaires sur les `nb_months` derniers mois (inclus le mois courant)."""
+    series = []
+    for i in range(nb_months - 1, -1, -1):
+        m_start = _month_offset(now, i)
+        m_end = _month_offset(now, i - 1)
+        vol = sum(
+            a.volume_horaire_calcule
+            for a in activities
+            if a.created_at and m_start <= a.created_at < m_end
+        )
+        series.append({
+            "mois": MONTH_NAMES_FR[m_start.month - 1],
+            "volume": round(vol, 1),
+        })
+    return series
+
+
+# Quota statutaire par défaut si la table QuotaStatutaire ne contient pas
+# la combinaison (grade, statut) demandée.
+DEFAULT_QUOTA_HEURES = 192.0
+
+
+def _resolve_quota(teacher: Teacher, db: Session) -> float:
+    """Retourne le quota annuel applicable pour un enseignant.
+
+    Source : table `QuotaStatutaire` (paramétrable via PUT /config/quotas).
+    Fallback : 192h (norme académique standard).
+    """
+    if not teacher.grade or not teacher.statut:
+        return DEFAULT_QUOTA_HEURES
+    row = (
+        db.query(QuotaStatutaire)
+        .filter(
+            QuotaStatutaire.grade == teacher.grade,
+            QuotaStatutaire.statut == teacher.statut,
+        )
+        .first()
+    )
+    return row.quota_heures if row else DEFAULT_QUOTA_HEURES
+
+
 @router.get("/stats")
-def get_dashboard_stats(db: Session = Depends(get_db)):
+def get_dashboard_stats(
+    db: Session = Depends(get_db),
+    _=Depends(require_admin_or_secretary),
+):
     total_teachers = db.query(Teacher).count()
     total_courses = db.query(Course).count()
 
@@ -37,8 +101,7 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
         resource = db.query(Resource).filter(Resource.id == act.resource_id).first()
         course_intitule = None
         if resource:
-            from app.models.models import Course as CourseModel
-            course = db.query(CourseModel).filter(CourseModel.id == resource.course_id).first()
+            course = db.query(Course).filter(Course.id == resource.course_id).first()
             if course:
                 course_intitule = course.intitule
         recent_activities.append({
@@ -79,28 +142,8 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
         dept_volumes[dept] = dept_volumes.get(dept, 0) + vol
     dept_chart = [{"departement": k, "volume": round(v, 1)} for k, v in dept_volumes.items()]
 
-    # Monthly volume for the last 6 months
-    month_names = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun",
-                   "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"]
-    monthly_data = []
-    for i in range(5, -1, -1):
-        # Step back i full months from the 1st of the current month
-        month_date = (now.replace(day=1) - timedelta(days=i * 30)).replace(day=1)
-        m_start = month_date.replace(hour=0, minute=0, second=0, microsecond=0)
-        if m_start.month == 12:
-            m_end = m_start.replace(year=m_start.year + 1, month=1, day=1)
-        else:
-            m_end = m_start.replace(month=m_start.month + 1, day=1)
-
-        m_acts = db.query(Activity).filter(
-            Activity.created_at >= m_start,
-            Activity.created_at < m_end,
-        ).all()
-        m_vol = sum(a.volume_horaire_calcule for a in m_acts)
-        monthly_data.append({
-            "mois": month_names[m_start.month - 1],
-            "volume": round(m_vol, 1),
-        })
+    # Volume mensuel sur les 6 derniers mois
+    monthly_data = _build_monthly_series(all_activities, now)
 
     return {
         "total_teachers": total_teachers,
@@ -117,16 +160,26 @@ def get_dashboard_stats(db: Session = Depends(get_db)):
 
 
 @router.get("/teacher-stats/{teacher_id}")
-def get_teacher_stats(teacher_id: int, db: Session = Depends(get_db)):
+def get_teacher_stats(
+    teacher_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
     if not teacher:
-        return {"error": "Teacher not found"}
+        raise HTTPException(status_code=404, detail="Enseignant non trouvé")
+
+    if current_user.role == "teacher" and teacher.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Vous ne pouvez consulter que vos propres statistiques",
+        )
 
     activities = db.query(Activity).filter(Activity.teacher_id == teacher_id).all()
     volume_total = sum(a.volume_horaire_calcule for a in activities)
 
-    SEUIL_STATUTAIRE = 192.0
-    heures_complementaires = max(0.0, volume_total - SEUIL_STATUTAIRE)
+    seuil_statutaire = _resolve_quota(teacher, db)
+    heures_complementaires = max(0.0, volume_total - seuil_statutaire)
 
     now = datetime.utcnow()
     if now.month >= 9:
@@ -137,25 +190,9 @@ def get_teacher_stats(teacher_id: int, db: Session = Depends(get_db)):
     sem_activities = [a for a in activities if a.created_at and a.created_at >= sem_start]
     activites_semestre = len(sem_activities)
 
-    charge_pct = min(100, int((volume_total / SEUIL_STATUTAIRE) * 100)) if SEUIL_STATUTAIRE > 0 else 0
+    charge_pct = min(100, int((volume_total / seuil_statutaire) * 100)) if seuil_statutaire > 0 else 0
 
-    month_names = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun",
-                   "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"]
-    monthly_data = []
-    for i in range(5, -1, -1):
-        month_date = (now.replace(day=1) - timedelta(days=i * 30)).replace(day=1)
-        m_start = month_date.replace(hour=0, minute=0, second=0, microsecond=0)
-        if m_start.month == 12:
-            m_end = m_start.replace(year=m_start.year + 1, month=1, day=1)
-        else:
-            m_end = m_start.replace(month=m_start.month + 1, day=1)
-
-        m_acts = [a for a in activities if a.created_at and m_start <= a.created_at < m_end]
-        m_vol = sum(a.volume_horaire_calcule for a in m_acts)
-        monthly_data.append({
-            "mois": month_names[m_start.month - 1],
-            "volume": round(m_vol, 1),
-        })
+    monthly_data = _build_monthly_series(activities, now)
 
     return {
         "teacher": {
@@ -172,6 +209,6 @@ def get_teacher_stats(teacher_id: int, db: Session = Depends(get_db)):
         "heures_complementaires": round(heures_complementaires, 1),
         "activites_semestre": activites_semestre,
         "charge_pct": charge_pct,
-        "seuil_statutaire": SEUIL_STATUTAIRE,
+        "seuil_statutaire": seuil_statutaire,
         "monthly_data": monthly_data,
     }

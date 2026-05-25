@@ -3,11 +3,52 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 
 from app.api.endpoints import auth, teachers, courses, activities, exports, dashboard, academic_years, users, config
-from app.db.database import engine, SessionLocal, get_db
+from app.core.security import require_admin
+from app.db.database import engine, SessionLocal
 from app.models import models
+
+
+def _parse_cors_origins() -> list:
+    """Liste des origines CORS autorisées.
+
+    Source : variable d'env `CORS_ORIGINS` (CSV).
+    Défaut : localhost dev (Next.js sur :3000).
+    """
+    raw = os.getenv("CORS_ORIGINS")
+    if raw:
+        return [o.strip() for o in raw.split(",") if o.strip()]
+    return [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+
+
+def _seed_config_tables(db) -> None:
+    """Seed des tables de paramétrage (idempotent, à chaque démarrage)."""
+    from app.models.models import CoefficientConfig, QuotaStatutaire
+    from app.services.calculator import OFFICIAL_BAREME
+
+    if db.query(CoefficientConfig).count() == 0:
+        for niveau, type_act, coeff in OFFICIAL_BAREME:
+            db.add(CoefficientConfig(
+                niveau_complexite=niveau, type_activite=type_act, coefficient=coeff,
+            ))
+    if db.query(QuotaStatutaire).count() == 0:
+        quotas_defaults = [
+            ("Professeur",              "Permanent", 192.0),
+            ("Maître de Conférences",   "Permanent", 192.0),
+            ("Maître-Assistant",        "Permanent", 192.0),
+            ("Assistant",               "Permanent", 192.0),
+            ("Professeur",              "Vacataire",  96.0),
+            ("Maître de Conférences",   "Vacataire",  96.0),
+            ("Maître-Assistant",        "Vacataire",  96.0),
+            ("Assistant",               "Vacataire",  96.0),
+        ]
+        for grade, statut, qh in quotas_defaults:
+            db.add(QuotaStatutaire(grade=grade, statut=statut, quota_heures=qh))
+    db.flush()
 
 
 def run_seed():
@@ -15,8 +56,14 @@ def run_seed():
     db = SessionLocal()
     try:
         from app.models.models import User
+
+        # Le paramétrage est toujours synchronisé (idempotent), même sur une DB existante
+        _seed_config_tables(db)
+
         if db.query(User).count() == 0:
-            from app.models.models import Teacher, Course, AcademicYear, Activity, Resource
+            from app.models.models import (
+                Teacher, Course, AcademicYear, Activity, Resource,
+            )
             from app.core.security import get_password_hash
             from app.services.calculator import calculate_volume_horaire
             import random
@@ -144,7 +191,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_parse_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -173,6 +220,7 @@ def health_check():
 
 
 @app.post("/seed", tags=["Dev"])
-def seed_data(db: Session = Depends(get_db)):
+def seed_data(_=Depends(require_admin)):
+    """Endpoint dev/admin : relance le seed (no-op si la DB contient déjà des users)."""
     run_seed()
     return {"message": "Seed execute"}
