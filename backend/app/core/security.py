@@ -1,4 +1,6 @@
 import os
+import secrets
+import warnings
 import bcrypt
 from datetime import datetime, timedelta
 from typing import Any, Union, Optional
@@ -10,7 +12,23 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 
-SECRET_KEY = os.getenv("SECRET_KEY", "SUPER_SECRET_KEY_FOR_UVCI_GESTON_HEURES")
+
+def _load_secret_key() -> str:
+    """Charge SECRET_KEY depuis l'environnement. En dev, génère une clé éphémère
+    avec avertissement explicite (les tokens seront invalidés au redémarrage)."""
+    key = os.getenv("SECRET_KEY")
+    if key:
+        return key
+    warnings.warn(
+        "SECRET_KEY non définie : génération d'une clé éphémère pour le développement. "
+        "À configurer impérativement en production (Render fournit la valeur via render.yaml).",
+        RuntimeWarning,
+        stacklevel=2,
+    )
+    return secrets.token_urlsafe(48)
+
+
+SECRET_KEY = _load_secret_key()
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 480))  # 8h
 
