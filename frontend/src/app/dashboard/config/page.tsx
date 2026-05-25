@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import MainLayout from '@/components/layout/MainLayout';
 import api from '@/lib/api';
 import { toast, Toaster } from 'react-hot-toast';
 
@@ -109,7 +108,7 @@ export default function ConfigPage() {
   };
 
   return (
-    <MainLayout>
+    <>
       <Toaster position="top-right" />
       <div className="mb-6 flex justify-between items-center">
         <div>
@@ -225,6 +224,6 @@ export default function ConfigPage() {
 
         </div>
       )}
-    </MainLayout>
+    </>
   );
 }

@@ -100,7 +100,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           {role === 'admin' && (
             <>
               <div className="nav-section-label" style={{ marginTop: '1rem' }}>Système</div>
-              <Link href="/settings" className={`nav-item ${pathname === '/settings' ? 'active' : ''}`}>
+              <Link href="/dashboard/config" className={`nav-item ${pathname.startsWith('/dashboard/config') ? 'active' : ''}`}>
                 <Settings size={18} /><span>Paramètres</span>
               </Link>
             </>

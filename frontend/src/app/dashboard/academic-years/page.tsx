@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import MainLayout from '@/components/layout/MainLayout';
 import api from '@/lib/api';
 import { toast, Toaster } from 'react-hot-toast';
 
@@ -100,7 +99,7 @@ export default function AcademicYearsPage() {
   };
 
   return (
-    <MainLayout>
+    <>
       <Toaster position="top-right" />
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -263,6 +262,6 @@ export default function AcademicYearsPage() {
           </div>
         </div>
       )}
-    </MainLayout>
+    </>
   );
 }
