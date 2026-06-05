@@ -11,15 +11,21 @@ interface ActivityOut {
   type_activite: string; niveau_complexite: number; nb_sequences: number;
   volume_horaire_calcule: number; validation_status: string; created_at?: string;
 }
+interface Coefficient { niveau_complexite: number; type_activite: string; coefficient: number; }
 
-const RATES: Record<number, Record<string, number>> = {
-  1: { creation: 0.4, mise_a_jour: 0.2 },
-  2: { creation: 0.75, mise_a_jour: 0.375 },
-  3: { creation: 1.5, mise_a_jour: 0.75 },
-};
+type CoeffMap = Record<number, Record<string, number>>;
 
-function calcVolume(type: string, niveau: number, seq: number) {
-  return (RATES[niveau]?.[type] || 0) * seq;
+function buildCoeffMap(coefficients: Coefficient[]): CoeffMap {
+  const map: CoeffMap = {};
+  for (const c of coefficients) {
+    if (!map[c.niveau_complexite]) map[c.niveau_complexite] = {};
+    map[c.niveau_complexite][c.type_activite] = c.coefficient;
+  }
+  return map;
+}
+
+function calcVolume(type: string, niveau: number, seq: number, coeffMap: CoeffMap) {
+  return (coeffMap[niveau]?.[type] ?? 0) * seq;
 }
 
 export default function SecretaryActivitiesPage() {
@@ -27,6 +33,7 @@ export default function SecretaryActivitiesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [years, setYears] = useState<AcademicYear[]>([]);
   const [activities, setActivities] = useState<ActivityOut[]>([]);
+  const [coeffMap, setCoeffMap] = useState<CoeffMap>({});
 
   const [teacherId, setTeacherId] = useState('');
   const [courseId, setCourseId] = useState('');
@@ -38,7 +45,8 @@ export default function SecretaryActivitiesPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
-  const volume = calcVolume(type, niveau, sequences);
+  const volume = calcVolume(type, niveau, sequences, coeffMap);
+  const currentRate = coeffMap[niveau]?.[type];
 
   useEffect(() => {
     Promise.all([
@@ -46,6 +54,7 @@ export default function SecretaryActivitiesPage() {
       api.get('/courses/').then(r => setCourses(r.data)),
       api.get('/academic-years/').then(r => setYears(r.data)),
       api.get('/activities/').then(r => setActivities(r.data)),
+      api.get('/config/coefficients').then(r => setCoeffMap(buildCoeffMap(r.data))),
     ]);
   }, []);
 
@@ -199,7 +208,7 @@ export default function SecretaryActivitiesPage() {
                 {volume.toFixed(2)} h
               </div>
               <div style={{ fontSize: '0.7rem', color: '#64748B', marginTop: '0.25rem' }}>
-                {sequences} séq. × {RATES[niveau]?.[type]}h/séq. (N{niveau} — {type === 'creation' ? 'Création' : 'MàJ'})
+                {sequences} séq. × {currentRate != null ? currentRate : '…'}h/séq. (N{niveau} — {type === 'creation' ? 'Création' : 'MàJ'})
               </div>
             </div>
 
