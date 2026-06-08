@@ -8,14 +8,11 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 
-client = TestClient(app)
-
-
 def _auth_headers(token: str) -> dict:
     return {"Authorization": f"Bearer {token}"}
 
 
-def test_workflow():
+def test_workflow(client: TestClient):
     print("--- Verification backend UVCI ---")
 
     # 1. Login admin (compte seedé)
@@ -109,4 +106,7 @@ def test_workflow():
 
 
 if __name__ == "__main__":
-    test_workflow()
+    # Le `with` déclenche le lifespan FastAPI (création des tables + seed),
+    # indispensable pour que le test fonctionne sur une base neuve.
+    with TestClient(app) as client:
+        test_workflow(client)

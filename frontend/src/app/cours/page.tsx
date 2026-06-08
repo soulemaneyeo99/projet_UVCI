@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, X, Loader2, BookOpen } from 'lucide-react';
-import api from '@/lib/api';
+import api, { getApiErrorMessage } from '@/lib/api';
 
 interface Course {
   id: number; intitule: string; filiere: string;
@@ -21,7 +21,7 @@ function CourseModal({ course, onClose, onSaved }: {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
+  const set = (k: string, v: string | number) => setForm(f => ({ ...f, [k]: v }));
 
   const save = async () => {
     setSaving(true); setError('');
@@ -29,8 +29,8 @@ function CourseModal({ course, onClose, onSaved }: {
       if (course) await api.put(`/courses/${course.id}`, form);
       else await api.post('/courses/', form);
       onSaved(); onClose();
-    } catch (e: any) {
-      setError(e?.response?.data?.detail || 'Erreur lors de la sauvegarde');
+    } catch (e) {
+      setError(getApiErrorMessage(e, 'Erreur lors de la sauvegarde'));
     } finally { setSaving(false); }
   };
 
@@ -102,6 +102,7 @@ export default function CoursesPage() {
     setLoading(true);
     api.get('/courses/').then(r => setCourses(r.data)).finally(() => setLoading(false));
   };
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- chargement initial volontaire
   useEffect(() => { load(); }, []);
 
   const del = async (id: number) => {

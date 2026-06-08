@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-import { Users, Clock, UserCheck, AlertTriangle, TrendingUp, Eye } from 'lucide-react';
+import { Users, Clock, UserCheck, AlertTriangle, TrendingUp } from 'lucide-react';
 import api from '@/lib/api';
 import Link from 'next/link';
 
@@ -66,7 +66,7 @@ export default function DashboardPage() {
     <>
       <div className="page-header">
         <h1 className="page-title">Tableau de bord</h1>
-        <p className="page-subtitle">Vue d'ensemble de l'activité pédagogique — {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</p>
+        <p className="page-subtitle">Vue d&apos;ensemble de l&apos;activité pédagogique — {new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</p>
       </div>
 
       {/* KPI Cards */}
@@ -128,7 +128,7 @@ export default function DashboardPage() {
                 <th style={{ textAlign: 'right' }}>Volume</th>
               </tr></thead>
               <tbody>
-                {(stats?.top_teachers || []).map((t, i) => (
+                {(stats?.top_teachers || []).map((t) => (
                   <tr key={t.id}>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

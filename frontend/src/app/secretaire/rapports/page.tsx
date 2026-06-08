@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Download, FileText, Table } from 'lucide-react';
+import { FileText, Table } from 'lucide-react';
 import api from '@/lib/api';
 
 interface Teacher {
@@ -48,7 +48,7 @@ export default function SecretaryReportsPage() {
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h1 className="page-title">Rapports</h1>
-          <p className="page-subtitle">Export et consultation des états d'heures</p>
+          <p className="page-subtitle">Export et consultation des états d&apos;heures</p>
         </div>
         <button className="btn btn-primary" onClick={downloadExcel} disabled={downloading === 'excel'}>
           <Table size={16} />
@@ -62,7 +62,7 @@ export default function SecretaryReportsPage() {
           { label: 'Volume total', value: `${totalVol.toFixed(1)}h`, color: '#1F4E79', bg: '#EBF2F7' },
           { label: 'Enseignants actifs', value: teachers.length, color: '#0F766E', bg: '#CCFBF1' },
           { label: 'Avec heures complémentaires', value: withOvertime.length, color: '#D97706', bg: '#FEF3C7' },
-        ].map(({ label, value, color, bg }) => (
+        ].map(({ label, value, color }) => (
           <div key={label} className="card">
             <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.5rem' }}>{label}</div>
             <div style={{ fontSize: '1.75rem', fontWeight: 800, color }}>{value}</div>

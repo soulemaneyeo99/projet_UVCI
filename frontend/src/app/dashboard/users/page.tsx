@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import api from '@/lib/api';
+import api, { getApiErrorMessage } from '@/lib/api';
 import { toast, Toaster } from 'react-hot-toast';
 
 interface User {
@@ -28,7 +28,7 @@ export default function UsersPage() {
     try {
       const res = await api.get('/users/');
       setUsers(res.data);
-    } catch (error) {
+    } catch {
       toast.error('Erreur lors du chargement des utilisateurs');
     } finally {
       setIsLoading(false);
@@ -72,8 +72,8 @@ export default function UsersPage() {
       }
       closeModal();
       fetchUsers();
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Une erreur est survenue');
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Une erreur est survenue'));
     }
   };
 
@@ -87,8 +87,8 @@ export default function UsersPage() {
         toast.success('Utilisateur activé');
       }
       fetchUsers();
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Une erreur est survenue');
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Une erreur est survenue'));
     }
   };
 
@@ -117,7 +117,7 @@ export default function UsersPage() {
               <tr className="bg-gray-50 border-b border-gray-100">
                 <th className="p-4 font-semibold text-gray-600">Email</th>
                 <th className="p-4 font-semibold text-gray-600">Rôle</th>
-                <th className="p-4 font-semibold text-gray-600">Date d'ajout</th>
+                <th className="p-4 font-semibold text-gray-600">Date d&apos;ajout</th>
                 <th className="p-4 font-semibold text-gray-600">Statut</th>
                 <th className="p-4 font-semibold text-gray-600">Actions</th>
               </tr>

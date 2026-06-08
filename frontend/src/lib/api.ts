@@ -11,4 +11,13 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+/** Extrait le message d'erreur renvoyé par l'API (champ `detail`), avec repli. */
+export function getApiErrorMessage(error: unknown, fallback: string): string {
+  if (axios.isAxiosError(error)) {
+    const detail = error.response?.data?.detail;
+    if (typeof detail === 'string') return detail;
+  }
+  return fallback;
+}
+
 export default api;

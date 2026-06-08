@@ -24,8 +24,9 @@ export default function SecretaryTeachersPage() {
   const [dept, setDept] = useState('');
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- rechargement volontaire au changement de filtre
     setLoading(true);
-    const params: any = {};
+    const params: Record<string, string> = {};
     if (search) params.search = search;
     if (grade) params.grade = grade;
     if (statut) params.statut = statut;

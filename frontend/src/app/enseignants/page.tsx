@@ -1,8 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Plus, Search, Edit2, Trash2, X, Loader2, PowerOff } from 'lucide-react';
-import api from '@/lib/api';
+import api, { getApiErrorMessage } from '@/lib/api';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface Teacher {
@@ -28,7 +28,7 @@ function TeacherModal({ teacher, onClose, onSaved }: {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  const set = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
+  const set = (k: string, v: string | number) => setForm(f => ({ ...f, [k]: v }));
 
   const save = async () => {
     setSaving(true); setError('');
@@ -36,8 +36,8 @@ function TeacherModal({ teacher, onClose, onSaved }: {
       if (teacher) await api.put(`/teachers/${teacher.id}`, form);
       else await api.post('/teachers/', form);
       onSaved(); onClose();
-    } catch (e: any) {
-      setError(e?.response?.data?.detail || 'Erreur lors de la sauvegarde');
+    } catch (e) {
+      setError(getApiErrorMessage(e, 'Erreur lors de la sauvegarde'));
     } finally { setSaving(false); }
   };
 
@@ -114,16 +114,17 @@ export default function TeachersPage() {
   const [page, setPage] = useState(1);
   const PER_PAGE = 10;
 
-  const load = () => {
+  const load = useCallback(() => {
     setLoading(true);
-    const params: any = {};
+    const params: Record<string, string> = {};
     if (search) params.search = search;
     if (grade) params.grade = grade;
     if (statut) params.statut = statut;
     api.get('/teachers/', { params }).then(r => setTeachers(r.data)).finally(() => setLoading(false));
-  };
+  }, [search, grade, statut]);
 
-  useEffect(() => { load(); }, [search, grade, statut]);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- rechargement volontaire au changement de filtre
+  useEffect(() => { load(); }, [load]);
 
   const del = async (id: number) => {
     if (!confirm('Voulez-vous vraiment supprimer cet enseignant ? (Action irréversible)')) return;

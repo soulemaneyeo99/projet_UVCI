@@ -55,7 +55,7 @@ export default function TeacherActivitiesPage() {
           <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#16A34A' }}>{validatedVol.toFixed(1)}h</div>
         </div>
         <div className="card">
-          <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.5rem' }}>Nombre d'activités</div>
+          <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '0.5rem' }}>Nombre d&apos;activités</div>
           <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#7C3AED' }}>{filtered.length}</div>
         </div>
       </div>
@@ -84,7 +84,7 @@ export default function TeacherActivitiesPage() {
             <thead>
               <tr>
                 <th>Cours</th>
-                <th>Type d'activité</th>
+                <th>Type d&apos;activité</th>
                 <th>Niveau</th>
                 <th style={{ textAlign: 'right' }}>Séquences</th>
                 <th style={{ textAlign: 'right' }}>Volume horaire</th>

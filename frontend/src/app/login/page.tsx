@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { getApiErrorMessage } from '@/lib/api';
 import { GraduationCap, Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -17,8 +18,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
-    } catch (err: any) {
-      setError(err?.response?.data?.detail || 'Email ou mot de passe incorrect.');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Email ou mot de passe incorrect.'));
     } finally {
       setLoading(false);
     }
@@ -61,7 +62,7 @@ export default function LoginPage() {
             GestionHeures UVCI
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.875rem' }}>
-            Université Virtuelle de Côte d'Ivoire
+            Université Virtuelle de Côte d&apos;Ivoire
           </p>
         </div>
 

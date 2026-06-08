@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import api from '@/lib/api';
+import api, { getApiErrorMessage } from '@/lib/api';
 import { toast, Toaster } from 'react-hot-toast';
 
 interface AcademicYear {
@@ -28,7 +28,7 @@ export default function AcademicYearsPage() {
     try {
       const res = await api.get('/academic-years/');
       setYears(res.data);
-    } catch (error) {
+    } catch {
       toast.error('Erreur lors du chargement des années académiques');
     } finally {
       setIsLoading(false);
@@ -72,8 +72,8 @@ export default function AcademicYearsPage() {
       }
       closeModal();
       fetchYears();
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Une erreur est survenue');
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Une erreur est survenue'));
     }
   };
 
@@ -82,8 +82,8 @@ export default function AcademicYearsPage() {
       await api.patch(`/academic-years/${year.id}/activate`);
       toast.success('Année académique activée');
       fetchYears();
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Erreur lors de l\'activation');
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Erreur lors de l'activation"));
     }
   };
 
@@ -93,8 +93,8 @@ export default function AcademicYearsPage() {
       await api.delete(`/academic-years/${year.id}`);
       toast.success('Année académique supprimée');
       fetchYears();
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Erreur lors de la suppression');
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Erreur lors de la suppression'));
     }
   };
 
@@ -104,7 +104,7 @@ export default function AcademicYearsPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Années Académiques</h1>
-          <p className="text-gray-500 text-sm mt-1">Gérez les années académiques et définissez l'année active</p>
+          <p className="text-gray-500 text-sm mt-1">Gérez les années académiques et définissez l&apos;année active</p>
         </div>
         <button
           onClick={() => openModal()}

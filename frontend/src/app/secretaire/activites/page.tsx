@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { Loader2, Calculator, CheckCircle, RefreshCw, Plus } from 'lucide-react';
-import api from '@/lib/api';
+import api, { getApiErrorMessage } from '@/lib/api';
 
 interface Teacher { id: number; nom: string; prenom: string; grade: string; departement: string; }
 interface Course { id: number; intitule: string; filiere: string; niveau: string; }
@@ -72,8 +72,8 @@ export default function SecretaryActivitiesPage() {
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
       setTeacherId(''); setCourseId(''); setSequences(1); setNiveau(1); setType('creation');
-    } catch (e: any) {
-      setError(e?.response?.data?.detail || 'Erreur lors de la soumission.');
+    } catch (e) {
+      setError(getApiErrorMessage(e, 'Erreur lors de la soumission.'));
     } finally { setSaving(false); }
   };
 
@@ -81,7 +81,7 @@ export default function SecretaryActivitiesPage() {
     <>
       <div className="page-header">
         <h1 className="page-title">Nouvelle Activité Pédagogique</h1>
-        <p className="page-subtitle">Saisissez et calculez le volume horaire d'une activité</p>
+        <p className="page-subtitle">Saisissez et calculez le volume horaire d&apos;une activité</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '420px 1fr', gap: '1.5rem', alignItems: 'start' }}>
@@ -141,7 +141,7 @@ export default function SecretaryActivitiesPage() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Type d'activité *</label>
+              <label className="form-label">Type d&apos;activité *</label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                 {[
                   { v: 'creation', label: 'Création de ressource', desc: 'Contenu entièrement nouveau', icon: Plus },

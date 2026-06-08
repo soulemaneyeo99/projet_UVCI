@@ -20,6 +20,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   }, [user, isLoading, isPublic, router]);
 
   // Close sidebar on route change (mobile nav)
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- réinitialisation volontaire à chaque changement de route
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
   if (isLoading) {

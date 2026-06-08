@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { FileText, Table, Download } from 'lucide-react';
+import { FileText, Table } from 'lucide-react';
 import api from '@/lib/api';
 
 interface TeacherStats {
@@ -69,7 +69,7 @@ export default function TeacherRecapPage() {
     <>
       <div className="page-header">
         <h1 className="page-title">Mon Récapitulatif</h1>
-        <p className="page-subtitle">Téléchargez votre bilan d'heures pédagogiques</p>
+        <p className="page-subtitle">Téléchargez votre bilan d&apos;heures pédagogiques</p>
       </div>
 
       <div style={{ maxWidth: '800px' }}>
@@ -87,7 +87,7 @@ export default function TeacherRecapPage() {
             {/* Header */}
             <div style={{ textAlign: 'center', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '2px solid #1F4E79' }}>
               <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1F4E79', marginBottom: '0.25rem' }}>
-                UNIVERSITÉ VIRTUELLE DE CÔTE D'IVOIRE
+                UNIVERSITÉ VIRTUELLE DE CÔTE D&apos;IVOIRE
               </div>
               <div style={{ fontSize: '0.75rem', color: '#64748B' }}>
                 Récapitulatif des Heures Pédagogiques — Année 2024-2025

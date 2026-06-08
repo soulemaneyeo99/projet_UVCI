@@ -41,7 +41,10 @@ interface DashboardStats {
   dept_chart: { departement: string; volume: number }[];
 }
 
-const DEPTS = ['', 'Informatique', 'Mathématiques', 'Sciences Économiques', 'Droit', 'Langues'];
+interface TeacherApi {
+  id: number; nom: string; prenom: string; grade: string;
+  departement: string; statut: string; taux_horaire: number;
+}
 
 export default function ReportsPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -70,14 +73,14 @@ export default function ReportsPage() {
 
       // Compute payment rows from teachers list + their activities
       const rows: TeacherRow[] = await Promise.all(
-        teachersRes.data.map(async (t: any) => {
+        teachersRes.data.map(async (t: TeacherApi) => {
           let volume = 0;
           let seuil = 192;
           try {
             const res = await api.get(`/dashboard/teacher-stats/${t.id}`);
             volume = res.data.volume_total ?? 0;
             seuil = res.data.seuil_statutaire ?? 192;
-          } catch (_) {}
+          } catch {}
           const heuresComp = Math.max(0, volume - seuil);
           return {
             id: t.id,
@@ -94,7 +97,7 @@ export default function ReportsPage() {
         })
       );
       setTeachers(rows);
-    } catch (e) {
+    } catch {
       showToast('Erreur de chargement des données', 'err');
     } finally {
       setLoading(false);
@@ -134,7 +137,7 @@ export default function ReportsPage() {
   const handleExportRapportAnnuel = async () => {
     setDownloading('rapport');
     try {
-      const params: Record<string, any> = {};
+      const params: Record<string, string> = {};
       if (selectedDept) params.departement = selectedDept;
       const res = await api.get('/exports/rapport-annuel', { responseType: 'blob', params });
       const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -298,7 +301,7 @@ export default function ReportsPage() {
                     <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
                   </td></tr>
                 )}
-                {!loading && filtered.map((t, i) => (
+                {!loading && filtered.map((t) => (
                   <tr key={t.id}>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -377,9 +380,9 @@ export default function ReportsPage() {
             <div style={{ width: '3.5rem', height: '3.5rem', borderRadius: '50%', background: '#EBF2F7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
               <Download size={22} color="#1F4E79" />
             </div>
-            <h3 style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.25rem' }}>Centre d'Exportation</h3>
+            <h3 style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.25rem' }}>Centre d&apos;Exportation</h3>
             <p style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: '1.25rem' }}>
-              Générez les documents officiels pour la comptabilité et l'administration.
+              Générez les documents officiels pour la comptabilité et l&apos;administration.
             </p>
 
             {/* Export global Excel */}

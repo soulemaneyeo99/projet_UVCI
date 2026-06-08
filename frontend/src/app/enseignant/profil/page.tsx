@@ -98,7 +98,7 @@ export default function TeacherProfilePage() {
         </div>
 
         <div style={{ background: '#EBF2F7', borderRadius: '8px', padding: '0.875rem 1rem', fontSize: '0.8rem', color: '#1F4E79' }}>
-          Pour modifier vos informations, veuillez contacter le secrétariat ou l'administration.
+          Pour modifier vos informations, veuillez contacter le secrétariat ou l&apos;administration.
         </div>
       </div>
     </>

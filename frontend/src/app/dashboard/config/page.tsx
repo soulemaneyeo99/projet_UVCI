@@ -27,9 +27,7 @@ export default function ConfigPage() {
     'Maître de Conférences',
     'Professeur',
   ];
-  const statuts = ['Permanent', 'Vacataire'];
   const niveaux = [1, 2, 3];
-  const typesActivite = ['creation', 'mise_a_jour'];
 
   const fetcData = async () => {
     setIsLoading(true);
@@ -40,7 +38,7 @@ export default function ConfigPage() {
       ]);
       setCoefficients(coefRes.data);
       setQuotas(quotasRes.data);
-    } catch (error) {
+    } catch {
       toast.error('Erreur lors du chargement des configurations');
     } finally {
       setIsLoading(false);
@@ -85,7 +83,7 @@ export default function ConfigPage() {
     try {
       await api.put('/config/coefficients', coefficients);
       toast.success('Coefficients mis à jour');
-    } catch (err) {
+    } catch {
       toast.error('Erreur lors de la sauvegarde des coefficients');
     }
   };
@@ -94,7 +92,7 @@ export default function ConfigPage() {
     try {
       await api.put('/config/quotas', quotas);
       toast.success('Quotas statutaires mis à jour');
-    } catch (err) {
+    } catch {
       toast.error('Erreur lors de la sauvegarde des quotas');
     }
   };
