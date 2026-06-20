@@ -1,8 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Search, Eye } from 'lucide-react';
+import { Search, Eye, X, Mail, Building2, Award, BadgeCheck } from 'lucide-react';
 import api from '@/lib/api';
-import Link from 'next/link';
 
 interface Teacher {
   id: number; nom: string; prenom: string; grade: string;
@@ -15,6 +14,52 @@ const STATUTS = ['Permanent', 'Vacataire'];
 const DEPTS = ['Informatique', 'Mathématiques', 'Sciences Économiques', 'Droit', 'Langues'];
 const SEUIL = 192;
 
+function TeacherDetailModal({ teacher, onClose }: { teacher: Teacher; onClose: () => void }) {
+  const pct = Math.min(100, Math.round((teacher.volume_horaire_total / SEUIL) * 100));
+  const rows: { icon: React.ReactNode; label: string; value: string }[] = [
+    { icon: <Mail size={15} />, label: 'Email', value: teacher.email },
+    { icon: <Award size={15} />, label: 'Grade', value: teacher.grade },
+    { icon: <Building2 size={15} />, label: 'Département', value: teacher.departement },
+    { icon: <BadgeCheck size={15} />, label: 'Statut', value: teacher.statut },
+  ];
+  return (
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div className="avatar">{teacher.prenom.charAt(0)}{teacher.nom.charAt(0)}</div>
+            <h3 style={{ fontWeight: 700, fontSize: '1rem' }}>{teacher.prenom} {teacher.nom}</h3>
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B' }}><X size={20} /></button>
+        </div>
+        <div className="modal-body">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {rows.map(r => (
+              <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', fontSize: '0.85rem' }}>
+                <span style={{ color: '#94A3B8', display: 'flex' }}>{r.icon}</span>
+                <span style={{ color: '#64748B', minWidth: '110px' }}>{r.label}</span>
+                <span style={{ fontWeight: 600 }}>{r.value}</span>
+              </div>
+            ))}
+            <div style={{ marginTop: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '4px' }}>
+                <span style={{ color: '#64748B' }}>Volume ce semestre — {teacher.volume_horaire_total}h / {SEUIL}h</span>
+                <span style={{ fontWeight: 600, color: pct >= 100 ? '#D97706' : '#1F4E79' }}>{pct}%</span>
+              </div>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: `${pct}%`, background: pct >= 100 ? '#D97706' : pct >= 75 ? '#2E75B6' : '#86EFAC' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={onClose}>Fermer</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SecretaryTeachersPage() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +67,7 @@ export default function SecretaryTeachersPage() {
   const [grade, setGrade] = useState('');
   const [statut, setStatut] = useState('');
   const [dept, setDept] = useState('');
+  const [selected, setSelected] = useState<Teacher | null>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- rechargement volontaire au changement de filtre
@@ -113,13 +159,14 @@ export default function SecretaryTeachersPage() {
                       </div>
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <Link
-                        href={`/secretaire/enseignants/${t.id}`}
+                      <button
+                        type="button"
+                        onClick={() => setSelected(t)}
                         className="btn btn-ghost btn-sm"
                         style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
                       >
                         <Eye size={14} /> Voir détail
-                      </Link>
+                      </button>
                     </td>
                   </tr>
                 );
@@ -131,6 +178,8 @@ export default function SecretaryTeachersPage() {
           </table>
         </div>
       </div>
+
+      {selected && <TeacherDetailModal teacher={selected} onClose={() => setSelected(null)} />}
     </>
   );
 }
