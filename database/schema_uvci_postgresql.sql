@@ -2,11 +2,16 @@
 --  UVCI — GESTION DES HEURES DES ENSEIGNANTS
 --  Script de création de la base de données (DDL)
 -- ---------------------------------------------------------------------
---  SGBD cible      : PostgreSQL 14+
+--  SGBD cible      : PostgreSQL 14+  (cible de production — déploiement Render)
 --  Encodage        : UTF-8
 --  Projet          : Projet Collectif Tutoré — PCT25-26_DAS-N°11
 --  Année           : 2025 – 2026
 --  Version         : 1.0
+-- ---------------------------------------------------------------------
+--  Schéma logique identique à la base réellement créée par l'application
+--  (8 tables des modèles ORM SQLAlchemy, backend/app/models/models.py).
+--  En développement, l'application utilise SQLite : voir le script
+--  équivalent « schema_uvci_sqlite.sql » dans le même dossier.
 -- ---------------------------------------------------------------------
 --  Conventions de nommage :
 --    - tables ......... pluriel, snake_case          (users, activities)
@@ -19,7 +24,7 @@
 --  Le script est idempotent (DROP ... IF EXISTS) et transactionnel :
 --  il s'exécute intégralement ou pas du tout.
 --
---  Exécution :  psql -U <user> -d <base> -f schema_uvci.sql
+--  Exécution :  psql -U <user> -d <base> -f schema_uvci_postgresql.sql
 -- =====================================================================
 
 BEGIN;

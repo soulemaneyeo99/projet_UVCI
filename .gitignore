@@ -39,3 +39,16 @@ yarn-error.log*
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Livrables académiques & outils de génération (hors dépôt code-only ;
+# conservés sur disque et dans la branche backup/pre-cleanup-snapshot)
+*.pdf
+*.pptx
+*.docx
+image.png
+image copy.png
+/presentation/
+/tools/
+CHANGELOG_SOUTENANCE.md
+SCRIPT_SOUTENANCE.md
+Script_BD_UVCI_Groupe11.sql

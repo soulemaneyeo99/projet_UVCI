@@ -17,7 +17,7 @@ Application web full-stack de **gestion des heures d'enseignement** pour l'Unive
 ```
 backend/     # API FastAPI (modèles, schémas, endpoints, moteur de calcul, sécurité)
 frontend/    # Application Next.js (App Router, organisée par rôle)
-database/    # schema_uvci.sql — DDL PostgreSQL de référence
+database/    # schema_uvci_sqlite.sql (base réelle dev) · schema_uvci_postgresql.sql (cible prod)
 render.yaml  # Configuration de déploiement Render
 ```
 
